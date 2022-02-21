@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+.githubtoken
+data
+*.gexf
+
+# ignore go build and test outputs
+coverage.txt
+coverage.out
+_build
+coverage.txt

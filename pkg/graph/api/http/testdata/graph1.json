@@ -1,0 +1,318 @@
+{
+  "graph": {
+    "uid": "dd099040-9dab-4f3d-848e-3046912aa281",
+    "type": "weighted_directed",
+    "nodes": 7,
+    "edges": 9,
+    "label": "test"
+  },
+  "nodes": [
+    {
+      "id": 1,
+      "uid": "c2aff266-5103-43af-8977-6c89916da62a",
+      "deg_out": 1,
+      "deg_in": 2,
+      "label": "Repo",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 153,
+          "G": 255,
+          "R": 0
+        },
+        "date": "2019-03-02T11:32:04Z",
+        "full_name": "jupyter/nbdime",
+        "name": "nbdime",
+        "shape": "diamond",
+        "style": "filling"
+      }
+    },
+    {
+      "id": 2,
+      "uid": "4d021bde-301d-4bf4-bce2-be4813b80c62",
+      "deg_out": 1,
+      "deg_in": 4,
+      "label": "Owner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 240,
+          "G": 154,
+          "R": 245
+        },
+        "name": "herrbischoff",
+        "full_name": "herrbischoff",
+        "shape": "hexagon",
+        "style": "filling"
+      }
+    },
+    {
+      "id": 3,
+      "uid": "3b13668b-1d35-4d9b-8a25-eb566ee7e9ad",
+      "deg_out": 1,
+      "deg_in": 2,
+      "label": "Owner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 240,
+          "G": 154,
+          "R": 245
+        },
+        "name": "dave",
+        "full_name": "dave",
+        "shape": "hexagon",
+        "style": "filling"
+      }
+    },
+    {
+      "id": 4,
+      "uid": "afd84d5d-9854-4d44-80f1-12fe72784ff9",
+      "deg_out": 2,
+      "deg_in": 0,
+      "label": "Topic",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 255,
+          "G": 153,
+          "R": 153
+        },
+        "name": "board",
+        "shape": "ellipse",
+        "style": "filling"
+      }
+    },
+    {
+      "id": 5,
+      "uid": "3d549bb2-dae1-4049-9578-bf70447bedb5",
+      "deg_out": 2,
+      "deg_in": 0,
+      "label": "Repo",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 153,
+          "G": 255,
+          "R": 0
+        },
+        "date": "2017-03-06T14:32:00Z",
+        "full_name": "HyperGAN/HyperGAN",
+        "name": "HyperGAN",
+        "shape": "diamond",
+        "style": "filling"
+      }
+    },
+    {
+      "id": 6,
+      "uid": "01d57f3d-12b0-4c6c-aa66-9d91b3779c7f",
+      "deg_out": 0,
+      "deg_in": 0,
+      "label": "Repo",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 153,
+          "G": 255,
+          "R": 0
+        },
+        "date": "2020-06-17T08:22:45Z",
+        "full_name": "heestand-xyz/UI3",
+        "name": "UI3",
+        "shape": "diamond",
+        "style": "filling"
+      }
+    },
+    {
+      "id": 0,
+      "uid": "e5c1649c-752a-47fa-aea6-5145fc832f55",
+      "deg_out": 2,
+      "deg_in": 1,
+      "label": "Topic",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 255,
+          "G": 153,
+          "R": 153
+        },
+        "name": "async",
+        "shape": "ellipse",
+        "style": "filling"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "uid": "775f90ae-6567-48a1-9804-9dbfecb8cc51",
+      "source": 0,
+      "target": 1,
+      "weight": 1,
+      "label": "HasLang",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasLang",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "269f0dbf-d142-4630-be38-5bd6c88dc34d",
+      "source": 0,
+      "target": 3,
+      "weight": 1,
+      "label": "HasLang",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasLang",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "2e33fed2-4a5e-426f-a868-748688576df4",
+      "source": 1,
+      "target": 2,
+      "weight": 1,
+      "label": "HasOwner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasOwner",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "6a9a0a02-c64b-4fb4-a9f8-57a9d6f40573",
+      "source": 2,
+      "target": 3,
+      "weight": 1,
+      "label": "HasLang",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasLang",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "b0138f8d-7492-44e3-b19c-9769e841ad04",
+      "source": 3,
+      "target": 2,
+      "weight": 1,
+      "label": "HasOwner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasOwner",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "f00aabd3-c652-40b3-bd02-98681393be48",
+      "source": 4,
+      "target": 0,
+      "weight": 1,
+      "label": "HasOwner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasOwner",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "4dcec2db-d79d-4bbd-a293-b01c68ec797c",
+      "source": 4,
+      "target": 2,
+      "weight": 1,
+      "label": "HasOwner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasOwner",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "0d830de0-54f7-4899-bcb9-5d65a2bc4879",
+      "source": 5,
+      "target": 2,
+      "weight": 1,
+      "label": "HasOwner",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasOwner",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    },
+    {
+      "uid": "31a8ae57-2779-4068-9d97-c3f63f1faa44",
+      "source": 5,
+      "target": 1,
+      "weight": 1,
+      "label": "HasLang",
+      "attributes": {
+        "color": {
+          "A": 0,
+          "B": 0,
+          "G": 0,
+          "R": 0
+        },
+        "relation": "HasLang",
+        "shape": "normal",
+        "style": "filling",
+        "weight": 1
+      }
+    }
+  ]
+}

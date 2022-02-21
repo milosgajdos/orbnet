@@ -1,0 +1,774 @@
+basePath: /api
+definitions:
+  api.Edge:
+    properties:
+      attributes:
+        additionalProperties: true
+        description: Attrs are edge attributes
+        type: object
+      label:
+        description: Label is edge label
+        type: string
+      source:
+        description: Source is an ID of the edge source node.
+        type: integer
+      target:
+        description: Target is an ID of the edge target node.
+        type: integer
+      uid:
+        description: UID is edge UUID.
+        type: string
+      weight:
+        description: Weight is the edge weight.
+        type: number
+    type: object
+  api.EdgeUpdate:
+    properties:
+      attributes:
+        additionalProperties: true
+        type: object
+      label:
+        type: string
+      weight:
+        type: number
+    type: object
+  api.Graph:
+    properties:
+      attributes:
+        additionalProperties: true
+        description: Attrs are graph attributes.
+        type: object
+      edges:
+        description: Edge is the edge count.
+        type: integer
+      label:
+        description: Label is graph label.
+        type: string
+      nodes:
+        description: Nodes is the node count.
+        type: integer
+      type:
+        description: Type is a type of graph.
+        type: string
+      uid:
+        description: UID is graph UUID.
+        type: string
+    type: object
+  api.GraphUpdate:
+    properties:
+      attributes:
+        additionalProperties: true
+        type: object
+      label:
+        type: string
+    type: object
+  api.Node:
+    properties:
+      attributes:
+        additionalProperties: true
+        description: Attrs are node attributes
+        type: object
+      deg_in:
+        description: DegIn is the count of incoming edges.
+        type: integer
+      deg_out:
+        description: DegOut is the count of outgoing edges.
+        type: integer
+      id:
+        description: ID is node ID.
+        type: integer
+      label:
+        description: Label is node label
+        type: string
+      uid:
+        description: UID is node UUID.
+        type: string
+    type: object
+  api.NodeUpdate:
+    properties:
+      attributes:
+        additionalProperties: true
+        type: object
+      label:
+        type: string
+    type: object
+  http.EdgesResponse:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/api.Edge'
+        type: array
+      "n":
+        type: integer
+    type: object
+  http.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  http.GraphsResponse:
+    properties:
+      graphs:
+        items:
+          $ref: '#/definitions/api.Graph'
+        type: array
+      "n":
+        type: integer
+    type: object
+  http.NodesResponse:
+    properties:
+      "n":
+        type: integer
+      nodes:
+        items:
+          $ref: '#/definitions/api.Node'
+        type: array
+    type: object
+info:
+  contact:
+    email: foo@bar.com
+    name: API Support
+  description: This is an API for managing Graphs.
+  termsOfService: http://swagger.io/terms/
+  title: Graphs API
+  version: "1.0"
+paths:
+  /v1/graphs:
+    get:
+      description: Get all available graphs.
+      parameters:
+      - description: Result offset
+        in: query
+        name: offset
+        type: integer
+      - description: Result limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.GraphsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get all graphs
+      tags:
+      - graphs
+    post:
+      consumes:
+      - application/json
+      description: Create new graph.
+      parameters:
+      - description: Create a graph
+        in: body
+        name: graph
+        required: true
+        schema:
+          $ref: '#/definitions/api.Graph'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Graph'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Create new graph.
+      tags:
+      - graphs
+  /v1/graphs/{guid}/edges:
+    delete:
+      description: Delete graph edge between nodes with given IDs.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Source node ID
+        in: query
+        name: source
+        type: integer
+      - description: Target node ID
+        in: query
+        name: target
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Edge was deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Delete graph edge between two nodes.
+      tags:
+      - edges
+    get:
+      description: Get all edges matching a query.
+      parameters:
+      - description: Result offset
+        in: query
+        name: offset
+        type: integer
+      - description: Result limit
+        in: query
+        name: limit
+        type: integer
+      - description: Node label
+        in: query
+        name: label
+        type: string
+      - description: Graph UID
+        in: path
+        name: guid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.EdgesResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get graph edges matching a filter.
+      tags:
+      - edges
+    patch:
+      consumes:
+      - application/json
+      description: Update existing graph edge between the nodes with the given IDs.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Update an edge
+        in: body
+        name: graph
+        required: true
+        schema:
+          $ref: '#/definitions/api.EdgeUpdate'
+      - description: Source node ID
+        in: query
+        name: source
+        type: integer
+      - description: Target node ID
+        in: query
+        name: target
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Edge'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Update graph edge between two existing nodes.
+      tags:
+      - edges
+    post:
+      consumes:
+      - application/json
+      description: Create a new graph edge and return it.
+      parameters:
+      - description: Create a edge
+        in: body
+        name: graph
+        required: true
+        schema:
+          $ref: '#/definitions/api.Edge'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Edge'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Create new graph edge.
+      tags:
+      - edges
+  /v1/graphs/{guid}/edges/{uid}:
+    delete:
+      description: Delete graph edge with the given UID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: guid
+        required: true
+        type: string
+      - description: Edge UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Edge was deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Delete graph edge by UID.
+      tags:
+      - edges
+    get:
+      description: Get graph a single graph edge with the given UID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: guid
+        required: true
+        type: string
+      - description: Edge UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Edge'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get graph edge by UID.
+      tags:
+      - edges
+  /v1/graphs/{guid}/nodes:
+    get:
+      description: Get all nodes matching a query.
+      parameters:
+      - description: Result offset
+        in: query
+        name: offset
+        type: integer
+      - description: Result limit
+        in: query
+        name: limit
+        type: integer
+      - description: Node label
+        in: query
+        name: label
+        type: string
+      - description: Graph UID
+        in: path
+        name: guid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.NodesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Graph nodes matching a filter.
+      tags:
+      - nodes
+    post:
+      consumes:
+      - application/json
+      description: Create a new graph node and returns it.
+      parameters:
+      - description: Create a node
+        in: body
+        name: graph
+        required: true
+        schema:
+          $ref: '#/definitions/api.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Node'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Create new graph node.
+      tags:
+      - nodes
+  /v1/graphs/{guid}/nodes/{id}:
+    delete:
+      description: Delete graph node with the given ID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Node was deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Delete graph node by ID.
+      tags:
+      - nodes
+    get:
+      description: Get a single graph node with the given ID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: guid
+        required: true
+        type: string
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Node'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get graph node by ID.
+      tags:
+      - nodes
+    patch:
+      consumes:
+      - application/json
+      description: Update existing graph node.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update a node
+        in: body
+        name: graph
+        required: true
+        schema:
+          $ref: '#/definitions/api.NodeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Node'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Update graph node.
+      tags:
+      - nodes
+  /v1/graphs/{guid}/nodes/uid/{uid}:
+    delete:
+      description: Delete graph node with the given UID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Node was deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Delete graph node by UID.
+      tags:
+      - nodes
+    get:
+      description: Get graph returns a single graph node with the given UID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: guid
+        required: true
+        type: string
+      - description: Node UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Node'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get graph node by UID.
+      tags:
+      - nodes
+  /v1/graphs/{uid}:
+    delete:
+      description: Delete graph with the given UID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Graph was deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Delete graph by UID.
+      tags:
+      - graphs
+    get:
+      description: Get graph returns graph with the given UID.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Graph'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get graph by UID.
+      tags:
+      - graphs
+    patch:
+      consumes:
+      - application/json
+      description: Update existing graph.
+      parameters:
+      - description: Graph UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Update a graph
+        in: body
+        name: graph
+        required: true
+        schema:
+          $ref: '#/definitions/api.GraphUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Graph'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Update graph
+      tags:
+      - graphs
+swagger: "2.0"
