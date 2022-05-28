@@ -37,4 +37,5 @@ require (
 	golang.org/x/tools v0.0.0-20201120155355-20be4ac4bd6e // indirect
 	google.golang.org/appengine v1.1.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
