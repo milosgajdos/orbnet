@@ -37,15 +37,17 @@ func isStringly(a interface{}) (bool, string) {
 
 // ToString attempts to convert well known attributes to string.
 // The following attributes are considered as well known:
-//   * color
-//   * date
-//   * weight
-//   * name
-//   * relation
+//   - color
+//   - date
+//   - weight
+//   - name
+//   - relation
+//
 // At the moment the following attribute conversions are implemented:
-//   * color to color.RGBA hex codes of RGB channels
-//   * date to string representation as per time.RFC3339
-//   * weight string representation
+//   - color to color.RGBA hex codes of RGB channels
+//   - date to string representation as per time.RFC3339
+//   - weight string representation
+//
 // If an unknown attribute key is supplied an empty string is returned.
 func ToString(k string, v interface{}) string {
 	switch k {

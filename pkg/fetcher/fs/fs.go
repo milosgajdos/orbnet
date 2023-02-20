@@ -3,7 +3,7 @@ package fs
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -16,9 +16,18 @@ type Fetcher struct {
 }
 
 func NewFetcher(dir string) (*Fetcher, error) {
-	files, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
+	}
+
+	files := make([]fs.FileInfo, 0, len(entries))
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			return nil, err
+		}
+		files = append(files, info)
 	}
 
 	return &Fetcher{
