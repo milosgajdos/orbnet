@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/swaggo/swag v1.7.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
-	gonum.org/v1/gonum v0.9.3
+	gonum.org/v1/gonum v0.12.0
 )
 
 require (
@@ -34,7 +34,7 @@ require (
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/tools v0.0.0-20201120155355-20be4ac4bd6e // indirect
+	golang.org/x/tools v0.1.9 // indirect
 	google.golang.org/appengine v1.1.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
