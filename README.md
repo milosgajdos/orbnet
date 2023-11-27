@@ -13,7 +13,25 @@ There are a few command line utilties available in this repo:
 
 # Get started
 
-The easiest way to get started is to build the binaries using the project `Makefile`:
+If you have `nix` installed just run
+```
+nix build
+```
+
+or
+
+```
+nix develop
+```
+
+You can also run individual commands which are provided as flake apps
+```
+nix run ".#apisrv"
+nix run ".#dumper"
+nix run ".#grapher"
+```
+
+Alternatively, if you have go toolchain installed globally, you can build the binaries using the project `Makefile`:
 
 ```shell
 make cmd
