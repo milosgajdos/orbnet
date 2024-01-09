@@ -15,7 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        go: [ '1.17' ]
+        go:
+          - '1.20'
+          - '1.21'
 
     steps:
 
@@ -65,7 +67,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        go: [ '1.17' ]
+        go:
+          - '1.20'
+          - '1.21'
 
     steps:
 
@@ -75,4 +79,4 @@ jobs:
     - name: Run linter
       uses: golangci/golangci-lint-action@v2
       with:
-        version: v1.51
+        version: v1.55
