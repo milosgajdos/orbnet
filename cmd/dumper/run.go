@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -43,7 +44,7 @@ func run(args []string) error {
 	if *token == "" {
 		*token = os.Getenv(ENV_GITHUB_TOKEN)
 		if *token == "" {
-			return fmt.Errorf("missing GitHub token")
+			return errors.New("missing GitHub token")
 		}
 	}
 
@@ -109,10 +110,13 @@ func run(args []string) error {
 	case <-ctx.Done():
 	}
 
+	// notify signal handler
+	cancel()
+	// wait for all goroutine to stop
 	wg.Wait()
 
 	if err != nil {
-		return fmt.Errorf("error dumping repos: %w", err)
+		return fmt.Errorf("error dumping repos: %v", err)
 	}
 
 	return nil

@@ -6,10 +6,10 @@ import (
 	"net"
 	"time"
 
-	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/swagger"
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
 	_ "github.com/milosgajdos/orbnet/pkg/graph/api/http/docs"
 )
@@ -56,7 +56,7 @@ func NewServer(config ...Config) (*Server, error) {
 
 	api := s.app.Group("/api")
 	v1 := api.Group("/v1")
-	v1.Get("/docs/*", swagger.Handler)
+	v1.Get("/docs/*", swagger.New())
 
 	s.registerGraphRoutes(v1)
 	s.registerNodeRoutes(v1)

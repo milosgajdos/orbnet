@@ -23,3 +23,6 @@ coverage.out
 _build
 coverage.txt
 result
+
+**/grapher
+**/dumper
