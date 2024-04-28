@@ -43,7 +43,6 @@ func run(args []string) error {
 		if err != nil {
 			return err
 		}
-
 	}
 
 	sigChan := sig.Register(os.Interrupt)
@@ -123,7 +122,7 @@ func run(args []string) error {
 	wg.Wait()
 
 	if err != nil {
-		return err
+		return fmt.Errorf("error building graph: %v", err)
 	}
 
 	if *marshal {
