@@ -12,7 +12,7 @@ linters:
     - goimports
     - prealloc
 
-run:
+issues:
   deadline: 2m
-  skip-dirs:
+  exlude-dirs:
     - vendor
