@@ -10,9 +10,6 @@ schema = 3
   [mod."github.com/PuerkitoBio/urlesc"]
     version = "v0.0.0-20170810143723-de5bf2ad4578"
     hash = "sha256-nL0/0QM0Pec83vBlwXvQ8g5SvvZnCQgzD1apxfHNGlg="
-  [mod."github.com/alecthomas/template"]
-    version = "v0.0.0-20190718012654-fb15b899a751"
-    hash = "sha256-RsS4qxdRQ3q+GejA8D9Iu31A/mZNms4LbJ7518jWiu4="
   [mod."github.com/andybalholm/brotli"]
     version = "v1.0.5"
     hash = "sha256-/qS8wU8yZQJ+uTOg66rEl9s7spxq9VIXF5L1BcaEClc="
@@ -34,9 +31,6 @@ schema = 3
   [mod."github.com/gofiber/swagger"]
     version = "v0.1.14"
     hash = "sha256-udeNvbvbGbA1dyP2w2byovVyxZAkUTpgT20FJn3wsOM="
-  [mod."github.com/golang/protobuf"]
-    version = "v1.3.2"
-    hash = "sha256-4fGAPuXMGpohqcqHeoIHwzCvkiWtIOAs0ewIhZ8JeU8="
   [mod."github.com/google/go-github/v34"]
     version = "v34.0.0"
     hash = "sha256-7dQbkwKGxFEbq1pT2AIfY8FiBRDd6dWihMHV6XjzJH4="
@@ -44,8 +38,8 @@ schema = 3
     version = "v1.0.0"
     hash = "sha256-n0ewWuB/JYt8bfrefQHRJ9uak9QzXeQs68TW7fESgXY="
   [mod."github.com/google/uuid"]
-    version = "v1.5.0"
-    hash = "sha256-DasOte4xANR1VND5XEHKGhpGiyYq74TJmNrgWeIRX4U="
+    version = "v1.6.0"
+    hash = "sha256-VWl9sqUzdOuhW0KzQlv0gwwUQClYkmZwSydHG2sALYw="
   [mod."github.com/josharian/intern"]
     version = "v1.0.0"
     hash = "sha256-LJR0QE2vOQ2/2shBbO5Yl8cVPq+NFrE3ers0vu9FRP0="
@@ -89,8 +83,8 @@ schema = 3
     version = "v0.23.0"
     hash = "sha256-ZB4504rtgsHbcRfijjlqt4/2ddb8tyQB5IBn126uVTQ="
   [mod."golang.org/x/oauth2"]
-    version = "v0.0.0-20180821212333-d2e6202438be"
-    hash = "sha256-x0Lvhts17qZLPpt43EuNzUXcKJ6krpGWLYiA0Fw5dnE="
+    version = "v0.19.0"
+    hash = "sha256-IYdkq8R8BXnwoBt/ZLAMJr0DkLZDMVkjeBJNQ/Z9Bes="
   [mod."golang.org/x/sys"]
     version = "v0.18.0"
     hash = "sha256-bIFhfFp7Sj0E1gcE3X3l/jecCfSRLgrkb8f0Yr6tVR0="
@@ -103,9 +97,6 @@ schema = 3
   [mod."gonum.org/v1/gonum"]
     version = "v0.12.0"
     hash = "sha256-DOYwuXJZFiSyjq+u4TwCmMtOqHLGIVXWtavtuuSquqQ="
-  [mod."google.golang.org/appengine"]
-    version = "v1.1.0"
-    hash = "sha256-h9cgoIcP/wOdgQXbhEr+f3yaRekYS9986aJ1BPeX9ds="
   [mod."gopkg.in/yaml.v2"]
     version = "v2.4.0"
     hash = "sha256-uVEGglIedjOIGZzHW4YwN1VoRSTK8o0eGZqzd+TNdd0="
