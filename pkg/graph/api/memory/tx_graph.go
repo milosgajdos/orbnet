@@ -8,6 +8,7 @@ import (
 )
 
 // CreateGraph creates a new graph and returns it.
+// nolint:revive
 func (t *Tx) CreateGraph(ctx context.Context, g *api.Graph) error {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -52,6 +53,7 @@ func (t *Tx) CreateGraph(ctx context.Context, g *api.Graph) error {
 
 // FindGraphByUID returns graph with the given UID.
 // It returns error if the graph with the given uid could not be found.
+// nolint:revive
 func (t *Tx) FindGraphByUID(ctx context.Context, uid string) (*memory.Graph, error) {
 	t.db.RLock()
 	defer t.db.RUnlock()
@@ -65,6 +67,7 @@ func (t *Tx) FindGraphByUID(ctx context.Context, uid string) (*memory.Graph, err
 }
 
 // FindGraphs returns all graphs matching the filter.
+// nolint:revive
 func (t *Tx) FindGraphs(ctx context.Context, filter api.GraphFilter) ([]*memory.Graph, int, error) {
 	t.db.RLock()
 	defer t.db.RUnlock()
@@ -115,6 +118,7 @@ func (t *Tx) FindGraphs(ctx context.Context, filter api.GraphFilter) ([]*memory.
 }
 
 // UpdateGraph updates graph in db.
+// nolint:revive
 func (t *Tx) UpdateGraph(ctx context.Context, uid string, update api.GraphUpdate) (*memory.Graph, error) {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -138,6 +142,7 @@ func (t *Tx) UpdateGraph(ctx context.Context, uid string, update api.GraphUpdate
 }
 
 // DeleteGraph deletes graph from db.
+// nolint:revive
 func (t *Tx) DeleteGraph(ctx context.Context, uid string) error {
 	t.db.Lock()
 	defer t.db.Unlock()

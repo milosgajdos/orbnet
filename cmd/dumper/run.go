@@ -22,8 +22,8 @@ const (
 	SyncerPool = 2
 	// Paging is the default GitHub API paging size.
 	Paging = 50
-	// ENV_GITHUB_TOKEN stores the name of the env var that store GitHub API token.
-	ENV_GITHUB_TOKEN = "GITHUB_TOKEN"
+	// EnvGithubToken stores the name of the env var that store GitHub API token.
+	EnvGithubToken = "GITHUB_TOKEN"
 )
 
 func run(args []string) error {
@@ -42,7 +42,7 @@ func run(args []string) error {
 	}
 
 	if *token == "" {
-		*token = os.Getenv(ENV_GITHUB_TOKEN)
+		*token = os.Getenv(EnvGithubToken)
 		if *token == "" {
 			return errors.New("missing GitHub token")
 		}

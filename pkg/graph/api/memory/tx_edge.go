@@ -15,6 +15,7 @@ type TxEdge struct {
 }
 
 // CreateEdge adds a new node to graph.
+// nolint:revive
 func (t *Tx) CreateEdge(ctx context.Context, uid string, e *api.Edge) error {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -68,6 +69,7 @@ func (t *Tx) CreateEdge(ctx context.Context, uid string, e *api.Edge) error {
 }
 
 // findEdgeByUID is a helper function that finds a node with the given id ore it returns error.
+// nolint:revive
 func (t Tx) findEdgeByUID(ctx context.Context, g *memory.Graph, uid string) (*TxEdge, error) {
 	edges := g.Edges()
 	for edges.Next() {
@@ -94,6 +96,7 @@ func (t *Tx) FindEdgeByUID(ctx context.Context, guid, euid string) (*TxEdge, err
 	return t.findEdgeByUID(ctx, g, euid)
 }
 
+// nolint:revive
 func filterNodeEdges(ctx context.Context, nodes gonum.Nodes, g *memory.Graph, filter api.EdgeFilter) ([]*TxEdge, error) {
 	var ex []*TxEdge
 	var e gonum.Edge
@@ -122,7 +125,8 @@ func filterNodeEdges(ctx context.Context, nodes gonum.Nodes, g *memory.Graph, fi
 	return ex, nil
 }
 
-func filterEdges(ctx context.Context, edges gonum.Edges, g *memory.Graph, filter api.EdgeFilter) ([]*TxEdge, error) {
+// nolint:revive
+func filterEdges(ctx context.Context, edges gonum.Edges, filter api.EdgeFilter) ([]*TxEdge, error) {
 	var ex []*TxEdge
 	for edges.Next() {
 		e := edges.Edge().(*memory.Edge)
@@ -194,7 +198,7 @@ func (t *Tx) FindEdges(ctx context.Context, uid string, filter api.EdgeFilter) (
 		return applyOffsetLimit(edges, filter.Offset, filter.Limit).([]*TxEdge), len(edges), nil
 	}
 
-	edges, err = filterEdges(ctx, g.Edges(), g, filter)
+	edges, err = filterEdges(ctx, g.Edges(), filter)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -202,6 +206,7 @@ func (t *Tx) FindEdges(ctx context.Context, uid string, filter api.EdgeFilter) (
 }
 
 // UpdateEdgeBetween updates edge between two nodes.
+// nolint:revive
 func (t *Tx) UpdateEdgeBetween(ctx context.Context, uid string, src, trgt int64, update api.EdgeUpdate) (*TxEdge, error) {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -241,6 +246,7 @@ func (t *Tx) UpdateEdgeBetween(ctx context.Context, uid string, src, trgt int64,
 }
 
 // DeleteEdge deletes edge with the given uid from graph.
+// nolint:revive
 func (t *Tx) DeleteEdge(ctx context.Context, guid, euid string) error {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -263,6 +269,7 @@ func (t *Tx) DeleteEdge(ctx context.Context, guid, euid string) error {
 }
 
 // DeleteEdgeBetween deletes all edges between source and target nodes.
+// nolint:revive
 func (t *Tx) DeleteEdgeBetween(ctx context.Context, uid string, source, target int64) error {
 	t.db.Lock()
 	defer t.db.Unlock()

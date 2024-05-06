@@ -64,6 +64,7 @@ func TestAttrsToStringMap(t *testing.T) {
 }
 
 func TestIsStringly(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		a   interface{}
 		ok  bool
@@ -91,6 +92,7 @@ func TestIsStringly(t *testing.T) {
 }
 
 func TestToString(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		k   string
 		a   interface{}

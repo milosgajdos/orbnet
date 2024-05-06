@@ -39,6 +39,7 @@ func MustOpenDB(t *testing.T, dsn string) *DB {
 	return db
 }
 
+// nolint:revive
 func MustOpenTx(t *testing.T, ctx context.Context, dsn string) *Tx {
 	db := MustOpenDB(t, dsn)
 	tx, err := db.BeginTx(ctx)
@@ -48,6 +49,7 @@ func MustOpenTx(t *testing.T, ctx context.Context, dsn string) *Tx {
 	return tx
 }
 
+// nolint:revive
 func MustAddGraph(t *testing.T, ctx context.Context, tx *Tx, g *memory.Graph) {
 	tx.db.Lock()
 	defer tx.db.Unlock()
@@ -58,6 +60,7 @@ func MustAddGraph(t *testing.T, ctx context.Context, tx *Tx, g *memory.Graph) {
 	tx.db.db[g.UID()] = g
 }
 
+// nolint:revive
 func MustAddNode(t *testing.T, ctx context.Context, tx *Tx, uid string, opts ...memory.Option) *memory.Node {
 	tx.db.Lock()
 	defer tx.db.Unlock()
