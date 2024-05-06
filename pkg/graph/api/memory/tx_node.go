@@ -17,6 +17,7 @@ type TxNode struct {
 }
 
 // CreateNode adds a new node to graph.
+// nolint:revive
 func (t *Tx) CreateNode(ctx context.Context, uid string, n *api.Node) error {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -55,6 +56,7 @@ func (t *Tx) CreateNode(ctx context.Context, uid string, n *api.Node) error {
 }
 
 // findNodeByID is a helper function that finds a node with the given id or it returns error.
+// nolint:revive
 func (t Tx) findNodeByID(ctx context.Context, g *memory.Graph, id int64) (*TxNode, error) {
 	n := g.Node(id)
 	if n == nil {
@@ -85,6 +87,7 @@ func (t *Tx) FindNodeByID(ctx context.Context, uid string, id int64) (*TxNode, e
 }
 
 // findNodeByUID is a helper function that finds a node with the given uid or it returns error.
+// nolint:revive
 func (t Tx) findNodeByUID(ctx context.Context, g *memory.Graph, uid string) (*TxNode, error) {
 	nodes := g.Nodes()
 	for nodes.Next() {
@@ -115,6 +118,7 @@ func (t *Tx) FindNodeByUID(ctx context.Context, guid, uid string) (*TxNode, erro
 	return t.findNodeByUID(ctx, g, uid)
 }
 
+// nolint:revive
 func filterNodes(ctx context.Context, nodes gonum.Nodes, g *memory.Graph, filter api.NodeFilter) ([]*TxNode, error) {
 	var nx []*TxNode
 	for nodes.Next() {
@@ -140,6 +144,7 @@ func filterNodes(ctx context.Context, nodes gonum.Nodes, g *memory.Graph, filter
 	return nx, nil
 }
 
+// nolint:revive
 func labeledNodes(ctx context.Context, g *memory.Graph, label string, node *TxNode) ([]*TxNode, int, error) {
 	if node.Label() == label {
 		txNode := &TxNode{
@@ -225,6 +230,7 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 }
 
 // UpdateNode updates node.
+// nolint:revive
 func (t *Tx) UpdateNode(ctx context.Context, uid string, id int64, update api.NodeUpdate) (*TxNode, error) {
 	t.db.Lock()
 	defer t.db.Unlock()
@@ -262,6 +268,7 @@ func (t *Tx) UpdateNode(ctx context.Context, uid string, id int64, update api.No
 }
 
 // DeleteNode deletes node from graph.
+// nolint:revive
 func (t *Tx) DeleteNodeByID(ctx context.Context, uid string, id int64) error {
 	t.db.Lock()
 	defer t.db.Unlock()

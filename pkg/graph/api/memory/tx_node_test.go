@@ -134,6 +134,7 @@ func TestTxFindNodeByiUID(t *testing.T) {
 }
 
 func TestTxFindNodes(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}

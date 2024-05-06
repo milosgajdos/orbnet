@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
-	_ "github.com/milosgajdos/orbnet/pkg/graph/api/http/docs"
+	_ "github.com/milosgajdos/orbnet/pkg/graph/api/http/docs" // blank import for swagger docs
 )
 
 // Server is an HTTP server used to provide REST API

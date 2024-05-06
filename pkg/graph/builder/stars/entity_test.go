@@ -8,6 +8,7 @@ import (
 )
 
 func TestEntityString(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Entity   Entity
 		Expected string
@@ -32,6 +33,7 @@ func TestEntityString(t *testing.T) {
 }
 
 func TestEntityStyle(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		Entity   Entity
 		Expected style.Style

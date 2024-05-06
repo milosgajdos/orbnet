@@ -16,7 +16,7 @@ const (
 )
 
 func MustNode(t *testing.T, id int64, label string, attrs map[string]interface{}) *Node {
-	n, err := NewNode(testID, WithLabel(testLabel), WithAttrs(attrs))
+	n, err := NewNode(id, WithLabel(label), WithAttrs(attrs))
 	if err != nil {
 		t.Fatalf("failed to create new node: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestNewEdge(t *testing.T) {
 	if f := re.From(); f.ID() != to.ID() {
 		t.Errorf("expected from ID: %d, got: %d", to.ID(), f.ID())
 	}
-	if tx := re.From(); tx.ID() != from.ID() {
+	if tx := re.To(); tx.ID() != from.ID() {
 		t.Errorf("expected to ID: %d, got: %d", tx.ID(), from.ID())
 	}
 

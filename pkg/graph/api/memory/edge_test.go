@@ -28,8 +28,8 @@ func MustAddNodeEdgeService(t *testing.T, es *EdgeService, uid string, opts ...m
 	return n
 }
 
-func MustEdgeServiceWithGraph(t *testing.T, dsn, uid string) *EdgeService {
-	es := MustEdgeService(t, dsn, uid)
+func MustEdgeServiceInGraph(t *testing.T, dsn, uid string) *EdgeService {
+	es := MustEdgeService(t, dsn)
 
 	es.db.Lock()
 	defer es.db.Unlock()
@@ -42,7 +42,7 @@ func MustEdgeServiceWithGraph(t *testing.T, dsn, uid string) *EdgeService {
 	return es
 }
 
-func MustEdgeService(t *testing.T, dsn, uid string) *EdgeService {
+func MustEdgeService(t *testing.T, dsn string) *EdgeService {
 	db := MustOpenDB(t, dsn)
 	db.Lock()
 	defer db.Unlock()
@@ -62,7 +62,7 @@ func TestCreateEdge(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 		n := MustAddNodeEdgeService(t, es, testGraphUID)
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
@@ -80,7 +80,7 @@ func TestCreateEdge(t *testing.T) {
 
 	t.Run("ErrInvalidEdge", func(t *testing.T) {
 		testGraphUID := "randUID"
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 
 		e := &api.Edge{Label: "testEdge"}
 
@@ -91,7 +91,7 @@ func TestCreateEdge(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		testGraphUID := "randUID"
-		es := MustEdgeService(t, MemoryDSN, testGraphUID)
+		es := MustEdgeService(t, MemoryDSN)
 
 		e := &api.Edge{Label: "testEdge"}
 
@@ -109,7 +109,7 @@ func TestFindEdgeByUID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 		n := MustAddNodeEdgeService(t, es, testGraphUID)
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
@@ -137,7 +137,7 @@ func TestFindEdgeByUID(t *testing.T) {
 	t.Run("ErrNotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 
 		if _, err := es.FindEdgeByUID(context.TODO(), testGraphUID, "foo"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -146,7 +146,7 @@ func TestFindEdgeByUID(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		testGraphUID := "randUID"
-		es := MustEdgeService(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 
 		if _, err := es.FindEdgeByUID(context.TODO(), testGraphUID, "foo"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -161,7 +161,7 @@ func TestUpdateEdgeBetween(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 		n := MustAddNodeEdgeService(t, es, testGraphUID)
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
@@ -213,7 +213,7 @@ func TestUpdateEdgeBetween(t *testing.T) {
 
 	t.Run("ErrEdgeNotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 		n := MustAddNodeEdgeService(t, es, testGraphUID)
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
@@ -239,7 +239,7 @@ func TestUpdateEdgeBetween(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		testGraphUID := "randUID"
-		es := MustEdgeService(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 
 		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, 1, 2, api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -255,7 +255,7 @@ func TestDeleteEdge(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 		n := MustAddNodeEdgeService(t, es, testGraphUID)
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
@@ -277,7 +277,7 @@ func TestDeleteEdge(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		testGraphUID := "randUID"
-		es := MustEdgeService(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 
 		if err := es.DeleteEdge(context.TODO(), testGraphUID, "foo"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -293,7 +293,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		es := MustEdgeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 		n := MustAddNodeEdgeService(t, es, testGraphUID)
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
@@ -315,7 +315,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		testGraphUID := "randUID"
-		es := MustEdgeService(t, MemoryDSN, testGraphUID)
+		es := MustEdgeService(t, MemoryDSN)
 
 		if err := es.DeleteEdgeBetween(context.TODO(), testGraphUID, 1, 2); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))

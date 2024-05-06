@@ -23,7 +23,7 @@ type Stars struct {
 	mu    *sync.RWMutex
 }
 
-// NewBuilder creates a new builder and returns it.
+// NewBuilder creates a new GH stars graph builder and returns it.
 func NewBuilder(g graph.Adder) (*Stars, error) {
 	return &Stars{
 		g:     g,
@@ -42,6 +42,7 @@ func (s *Stars) addNode(uid, name, fullName, label string, style style.Style) (*
 	}
 
 	opts := []memory.Option{
+		memory.WithUID(uid),
 		memory.WithLabel(label),
 		memory.WithAttrs(attrs),
 		memory.WithStyle(style),
@@ -118,8 +119,8 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 
 		if e := s.g.Edge(repoNode.ID(), ownerNode.ID()); e == nil {
 			style := Link.DefaultStyle()
-			relation := OwnsEdgeLabel
-			if _, err := s.linkNodes(repoNode, ownerNode, relation, relation, DefaultWeight, style); err != nil {
+			rel := OwnedByEdgeLabel
+			if _, err := s.linkNodes(repoNode, ownerNode, rel, rel, DefaultWeight, style); err != nil {
 				return err
 			}
 		}
@@ -140,8 +141,8 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 
 			if e := s.g.Edge(repoNode.ID(), topicNode.ID()); e == nil {
 				style := Link.DefaultStyle()
-				relation := TopicEdgeLabel
-				if _, err := s.linkNodes(repoNode, topicNode, relation, relation, DefaultWeight, style); err != nil {
+				rel := TopicEdgeLabel
+				if _, err := s.linkNodes(repoNode, topicNode, rel, rel, DefaultWeight, style); err != nil {
 					return err
 				}
 			}
@@ -163,8 +164,8 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 
 			if e := s.g.Edge(repoNode.ID(), langNode.ID()); e == nil {
 				style := Link.DefaultStyle()
-				relation := LangEdgeLabel
-				if _, err := s.linkNodes(repoNode, langNode, relation, relation, DefaultWeight, style); err != nil {
+				rel := LangEdgeLabel
+				if _, err := s.linkNodes(repoNode, langNode, rel, rel, DefaultWeight, style); err != nil {
 					return err
 				}
 			}

@@ -79,6 +79,7 @@ func TestTxFindGraphByUID(t *testing.T) {
 }
 
 func TestTxFindGraphs(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}

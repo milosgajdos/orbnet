@@ -92,6 +92,7 @@ func (db *DB) Close() error {
 }
 
 // Do creates a DB operation.
+// nolint:revive
 func (db *DB) BeginTx(ctx context.Context) (*Tx, error) {
 	if db.Closed {
 		return nil, ErrDBClosed

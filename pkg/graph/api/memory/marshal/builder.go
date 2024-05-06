@@ -26,7 +26,7 @@ func NewBuilder() (*Builder, error) {
 }
 
 // addNodes adds nodes to graph g.
-func (b *Builder) addNodes(ctx context.Context, g graph.Adder, nodes []api.Node) error {
+func (b *Builder) addNodes(_ context.Context, g graph.Adder, nodes []api.Node) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
@@ -61,7 +61,7 @@ func (b *Builder) addNodes(ctx context.Context, g graph.Adder, nodes []api.Node)
 }
 
 // addEdges adds edges to graph g.
-func (b *Builder) addEdges(ctx context.Context, g graph.Adder, edges []api.Edge) error {
+func (b *Builder) addEdges(_ context.Context, g graph.Adder, edges []api.Edge) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
