@@ -13,11 +13,11 @@ func TestEntityString(t *testing.T) {
 		Entity   Entity
 		Expected string
 	}{
-		{Owner, ownerString},
-		{Repo, repoString},
-		{Topic, topicString},
-		{Lang, langString},
-		{Link, linkString},
+		{OwnerEntity, ownerString},
+		{RepoEntity, repoString},
+		{TopicEntity, topicString},
+		{LangEntity, langString},
+		{LinkEntity, linkString},
 		{-100, unknownString},
 	}
 
@@ -38,11 +38,11 @@ func TestEntityStyle(t *testing.T) {
 		Entity   Entity
 		Expected style.Style
 	}{
-		{Owner, style.Style{Type: DefaultStyleType, Shape: OwnerShape, Color: OwnerColor}},
-		{Repo, style.Style{Type: DefaultStyleType, Shape: RepoShape, Color: RepoColor}},
-		{Topic, style.Style{Type: DefaultStyleType, Shape: TopicShape, Color: TopicColor}},
-		{Lang, style.Style{Type: DefaultStyleType, Shape: LangShape, Color: LangColor}},
-		{Link, style.Style{Type: DefaultStyleType, Shape: LinkShape, Color: LinkColor}},
+		{OwnerEntity, style.Style{Type: DefaultStyleType, Shape: OwnerShape, Color: OwnerColor}},
+		{RepoEntity, style.Style{Type: DefaultStyleType, Shape: RepoShape, Color: RepoColor}},
+		{TopicEntity, style.Style{Type: DefaultStyleType, Shape: TopicShape, Color: TopicColor}},
+		{LangEntity, style.Style{Type: DefaultStyleType, Shape: LangShape, Color: LangColor}},
+		{LinkEntity, style.Style{Type: DefaultStyleType, Shape: LinkShape, Color: LinkColor}},
 		{-100, style.Style{Type: DefaultStyleType, Shape: UnknownShape, Color: UnknownColor}},
 	}
 

@@ -3,7 +3,7 @@ package stars
 import (
 	"context"
 
-	"github.com/google/go-github/v34/github"
+	"github.com/google/go-github/v61/github"
 	"golang.org/x/oauth2"
 )
 

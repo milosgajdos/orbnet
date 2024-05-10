@@ -9,7 +9,7 @@ import (
 	"github.com/milosgajdos/orbnet/pkg/graph"
 	"github.com/milosgajdos/orbnet/pkg/graph/memory"
 
-	"github.com/google/go-github/v34/github"
+	"github.com/google/go-github/v61/github"
 )
 
 const (

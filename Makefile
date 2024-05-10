@@ -26,6 +26,7 @@ clean:
 
 dep:
 	go get ./...
+	go mod tidy
 
 test:
 	for pkg in ${PACKAGES}; do \
@@ -34,8 +35,5 @@ test:
 
 build:
 	go build ./...
-
-docker-build-all: dir
-	docker build . --target bin-all --output _build/ --platform ${PLATFORM}
 
 .PHONY: clean dumper grapher
