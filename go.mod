@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/swaggo/swag v1.16.2
 	golang.org/x/oauth2 v0.19.0
+	golang.org/x/sync v0.1.0
 	gonum.org/v1/gonum v0.12.0
 )
 

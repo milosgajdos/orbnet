@@ -2,6 +2,7 @@ package stars
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/go-github/v61/github"
 	"golang.org/x/oauth2"
@@ -21,9 +22,7 @@ func NewFetcher(token, user string, paging int) (*Fetcher, error) {
 	}, nil
 }
 
-func (f *Fetcher) Fetch(ctx context.Context, reposChan chan<- interface{}) error {
-	defer close(reposChan)
-
+func (f *Fetcher) GetTotalPages(ctx context.Context, paging int) (int, error) {
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: f.token},
 	)
@@ -32,27 +31,45 @@ func (f *Fetcher) Fetch(ctx context.Context, reposChan chan<- interface{}) error
 	client := github.NewClient(tc)
 
 	opts := &github.ActivityListStarredOptions{
-		ListOptions: github.ListOptions{PerPage: f.paging},
+		ListOptions: github.ListOptions{
+			PerPage: paging,
+		},
 	}
 
-	for {
-		repos, resp, err := client.Activity.ListStarred(ctx, f.user, opts)
+	_, resp, err := client.Activity.ListStarred(context.Background(), f.user, opts)
+	if err != nil {
+		return 0, err
+	}
+
+	return resp.LastPage, nil
+}
+
+func (f *Fetcher) Fetch(ctx context.Context, startPage, endPage int, reposChan chan<- interface{}) error {
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: f.token},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+
+	for page := startPage; page <= endPage; page++ {
+		opts := &github.ActivityListStarredOptions{
+			ListOptions: github.ListOptions{
+				Page:    page,
+				PerPage: f.paging,
+			},
+		}
+
+		repos, _, err := client.Activity.ListStarred(context.Background(), "", opts)
 		if err != nil {
-			return err
+			return fmt.Errorf("error fetching page %d: %v", page, err)
 		}
 
 		select {
 		case reposChan <- repos:
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		}
-
-		if resp.NextPage == 0 {
-			break
-		}
-
-		opts.Page = resp.NextPage
 	}
-
 	return nil
 }

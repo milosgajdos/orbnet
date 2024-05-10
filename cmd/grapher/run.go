@@ -4,32 +4,33 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
-	"sync"
 
 	"github.com/milosgajdos/orbnet/pkg/graph"
 	"github.com/milosgajdos/orbnet/pkg/graph/builder/stars"
 	"github.com/milosgajdos/orbnet/pkg/graph/memory"
-	sig "github.com/milosgajdos/orbnet/pkg/signal"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
 	// CliName is command line name.
 	CliName = "grapher"
+	// GraphLabel is the default graph label
+	GraphLabel = "orbnet"
 	// BuilderPool is the default size of graph builder pool.
-	BuilderPool = 2
+	BuilderPool = 1
 )
 
 func run(args []string) error {
 	flags := flag.NewFlagSet(CliName, flag.ExitOnError)
 
 	var (
-		indir    = flags.String("indir", "", "Input directory")
+		indir    = flags.String("indir", "", "input directory")
 		marshal  = flags.Bool("marshal", false, "marshal graph to stdout")
-		format   = flags.String("format", "dot", "Encoding format (dot, gexf, cytoscape, sigma, networkx, jsonapi)")
+		format   = flags.String("format", "dot", "encoding format (dot, gexf, cytoscape, sigma, networkx, jsonapi)")
 		builders = flags.Int("builders", BuilderPool, "number of graph builders")
+		label    = flags.String("flabel", GraphLabel, "graph label")
 	)
 
 	if err := flags.Parse(args[1:]); err != nil {
@@ -45,34 +46,24 @@ func run(args []string) error {
 		}
 	}
 
-	sigChan := sig.Register(os.Interrupt)
-
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
-
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt)
 	defer func() {
 		signal.Stop(sigChan)
 		cancel()
 	}()
-
-	var wg sync.WaitGroup
-
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
 		select {
-		case s := <-sigChan:
-			log.Printf("interrupting: got signal %s", s)
+		case <-sigChan:
+			fmt.Println("shutting down: received SIGINT...")
 			cancel()
 		case <-ctx.Done():
-			return
 		}
-		// hard exit
-		<-sigChan // second signal, hard exit
-		os.Exit(1)
 	}()
 
-	g, err := memory.NewGraph(memory.WithLabel("orbnet"))
+	g, err := memory.NewGraph(memory.WithLabel(*label))
 	if err != nil {
 		return err
 	}
@@ -88,41 +79,23 @@ func run(args []string) error {
 	}
 
 	reposChan := make(chan interface{}, *builders)
-	errChan := make(chan error)
+
+	eg, ctx := errgroup.WithContext(ctx)
 
 	for i := 0; i < *builders; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			select {
-			case errChan <- b.Build(ctx, reposChan):
-			case <-ctx.Done():
-			}
-		}()
+		eg.Go(func() error {
+			return b.Build(ctx, reposChan)
+		})
 	}
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		select {
-		case errChan <- f.Fetch(ctx, reposChan):
-		case <-ctx.Done():
+	eg.Go(func() error {
+		return f.Fetch(ctx, reposChan)
+	})
+
+	if err := eg.Wait(); err != nil {
+		if err != context.Canceled {
+			return fmt.Errorf("encountered error: %v", err)
 		}
-	}()
-
-	select {
-	case err = <-errChan:
-		cancel()
-	case <-ctx.Done():
-	}
-
-	// notify signal handler
-	cancel()
-	// wait for all goroutine to stop
-	wg.Wait()
-
-	if err != nil {
-		return fmt.Errorf("error building graph: %v", err)
 	}
 
 	if *marshal {

@@ -5,23 +5,25 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
-	"sync"
 
 	"github.com/milosgajdos/orbnet/pkg/fetcher/stars"
-	sig "github.com/milosgajdos/orbnet/pkg/signal"
 	"github.com/milosgajdos/orbnet/pkg/syncer/fs"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
 	// CliName is the name of the command line.
 	CliName = "dumper"
-	// SyncerPool defines the default size of syncer pool.
-	SyncerPool = 2
 	// Paging is the default GitHub API paging size.
 	Paging = 50
+	// SyncerPool defines the default size of syncer pool.
+	SyncerPool = 1
+	// FetcherPool defines the default size of fetcher pool.
+	FetcherPool = 1
+	// MaxFetchers is the upper bound of fetch workers.
+	MaxFetchers = 100
 	// EnvGithubToken stores the name of the env var that store GitHub API token.
 	EnvGithubToken = "GITHUB_TOKEN"
 )
@@ -30,11 +32,12 @@ func run(args []string) error {
 	flags := flag.NewFlagSet(CliName, flag.ExitOnError)
 
 	var (
-		user    = flags.String("user", "", "GitHub username")
-		token   = flags.String("token", "", "GitHub API token (GITHUB_TOKEN)")
-		outdir  = flags.String("outdir", "", "Output directory")
-		paging  = flags.Int("paging", Paging, "GitHub API results paging limit")
-		syncers = flags.Int("syncers", SyncerPool, "syncer pool size")
+		user     = flags.String("user", "", "GitHub username")
+		token    = flags.String("token", "", "GitHub API token (GITHUB_TOKEN)")
+		outdir   = flags.String("outdir", "", "Output directory")
+		paging   = flags.Int("paging", Paging, "GitHub API results paging limit")
+		syncers  = flags.Int("syncers", SyncerPool, "syncer pool size")
+		fetchers = flags.Int("fetchers", FetcherPool, "fetcher pool size")
 	)
 
 	if err := flags.Parse(args[1:]); err != nil {
@@ -48,24 +51,18 @@ func run(args []string) error {
 		}
 	}
 
-	sigChan := sig.Register(os.Interrupt)
-
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
-
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt)
 	defer func() {
 		signal.Stop(sigChan)
 		cancel()
 	}()
-
-	var wg sync.WaitGroup
-
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
 		select {
-		case s := <-sigChan:
-			log.Printf("iinterrupting: got signal %s", s)
+		case <-sigChan:
+			fmt.Println("shutting down: received SIGINT...")
 			cancel()
 		case <-ctx.Done():
 		}
@@ -76,48 +73,71 @@ func run(args []string) error {
 		return fmt.Errorf("create fetcher: %w", err)
 	}
 
+	totalPages, err := f.GetTotalPages(ctx, *paging)
+	if err != nil {
+		return fmt.Errorf("get total pages: %w", err)
+	}
+
 	s, err := fs.NewSyncer(*outdir)
 	if err != nil {
 		return fmt.Errorf("create syncer: %w", err)
 	}
 
-	reposChan := make(chan interface{}, *syncers)
-	errChan := make(chan error)
-
-	for i := 0; i < *syncers; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			select {
-			case errChan <- s.Sync(ctx, reposChan):
-			case <-ctx.Done():
-			}
-		}()
+	// TODO: move this to a dedicated func
+	numWorkers := *fetchers
+	// upper bound on concurrent requests
+	if numWorkers > MaxFetchers {
+		numWorkers = MaxFetchers
 	}
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		select {
-		case errChan <- f.Fetch(ctx, reposChan):
-		case <-ctx.Done():
+	if numWorkers > totalPages {
+		numWorkers = totalPages
+		// NOTE: this is a silly heuristic,
+		// but we dont want to run unnecessarily
+		// large number of fetchers if not needed.
+		if totalPages > 1 {
+			numWorkers = totalPages / 2
 		}
-	}()
-
-	select {
-	case err = <-errChan:
-		cancel()
-	case <-ctx.Done():
 	}
+	batchSize := totalPages / numWorkers
+	remainder := totalPages % numWorkers
 
-	// notify signal handler
-	cancel()
-	// wait for all goroutine to stop
-	wg.Wait()
+	reposChan := make(chan interface{}, *syncers)
 
-	if err != nil {
-		return fmt.Errorf("error dumping repos: %v", err)
+	g, ctx := errgroup.WithContext(ctx)
+
+	// launch syncers
+	g.Go(func() error {
+		sg, sctx := errgroup.WithContext(ctx)
+		for i := 0; i < *syncers; i++ {
+			sg.Go(func() error {
+				return s.Sync(sctx, reposChan)
+			})
+		}
+		return sg.Wait()
+	})
+	// launch fetchers
+	g.Go(func() error {
+		defer close(reposChan)
+		fg, fctx := errgroup.WithContext(ctx)
+		startPage := 1
+		for i := 0; i < numWorkers; i++ {
+			endPage := startPage + batchSize - 1
+			if i < remainder {
+				endPage++
+			}
+			sp, ep := startPage, endPage
+			fg.Go(func() error {
+				return f.Fetch(fctx, sp, ep, reposChan)
+			})
+			startPage = endPage + 1
+		}
+		return fg.Wait()
+	})
+
+	if err := g.Wait(); err != nil {
+		if err != context.Canceled {
+			return fmt.Errorf("encountered error: %v", err)
+		}
 	}
-
 	return nil
 }

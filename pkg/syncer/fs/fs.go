@@ -34,28 +34,25 @@ func (s *Syncer) newEncoder(idx int) (*json.Encoder, error) {
 	return json.NewEncoder(os.Stdout), nil
 }
 
+// nolint:revive
 func (s *Syncer) Sync(ctx context.Context, reposChan <-chan interface{}) error {
-	for {
-		select {
-		case repos := <-reposChan:
-			s.RLock()
-			idx := s.count
-			s.RUnlock()
+	for repos := range reposChan {
+		s.RLock()
+		idx := s.count
+		s.RUnlock()
 
-			e, err := s.newEncoder(idx)
-			if err != nil {
-				return err
-			}
-
-			if err := e.Encode(repos); err != nil {
-				return err
-			}
-
-			s.Lock()
-			s.count++
-			s.Unlock()
-		case <-ctx.Done():
-			return ctx.Err()
+		e, err := s.newEncoder(idx)
+		if err != nil {
+			return err
 		}
+
+		if err := e.Encode(repos); err != nil {
+			return err
+		}
+
+		s.Lock()
+		s.count++
+		s.Unlock()
 	}
+	return nil
 }
