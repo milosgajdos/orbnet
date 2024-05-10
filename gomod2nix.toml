@@ -31,12 +31,12 @@ schema = 3
   [mod."github.com/gofiber/swagger"]
     version = "v0.1.14"
     hash = "sha256-udeNvbvbGbA1dyP2w2byovVyxZAkUTpgT20FJn3wsOM="
-  [mod."github.com/google/go-github/v34"]
-    version = "v34.0.0"
-    hash = "sha256-7dQbkwKGxFEbq1pT2AIfY8FiBRDd6dWihMHV6XjzJH4="
+  [mod."github.com/google/go-github/v61"]
+    version = "v61.0.0"
+    hash = "sha256-ZzWRsX/dnJArCMYb+FC2+JBMvQ2CX2GCO/9LB1EDV3M="
   [mod."github.com/google/go-querystring"]
-    version = "v1.0.0"
-    hash = "sha256-n0ewWuB/JYt8bfrefQHRJ9uak9QzXeQs68TW7fESgXY="
+    version = "v1.1.0"
+    hash = "sha256-itsKgKghuX26czU79cK6C2n+lc27jm5Dw1XbIRgwZJY="
   [mod."github.com/google/uuid"]
     version = "v1.6.0"
     hash = "sha256-VWl9sqUzdOuhW0KzQlv0gwwUQClYkmZwSydHG2sALYw="
@@ -76,15 +76,15 @@ schema = 3
   [mod."github.com/valyala/tcplisten"]
     version = "v1.0.0"
     hash = "sha256-aP0CrNH6UNRMhzgA2NgPwKyZs6xry5aDlZnLgGuHZbs="
-  [mod."golang.org/x/crypto"]
-    version = "v0.21.0"
-    hash = "sha256-Z4k1LvFh4Jai7HUe6TTuXSG3VnuiRpMwdARIdZZqSYk="
   [mod."golang.org/x/net"]
     version = "v0.23.0"
     hash = "sha256-ZB4504rtgsHbcRfijjlqt4/2ddb8tyQB5IBn126uVTQ="
   [mod."golang.org/x/oauth2"]
     version = "v0.19.0"
     hash = "sha256-IYdkq8R8BXnwoBt/ZLAMJr0DkLZDMVkjeBJNQ/Z9Bes="
+  [mod."golang.org/x/sync"]
+    version = "v0.1.0"
+    hash = "sha256-Hygjq9euZ0qz6TvHYQwOZEjNiTbTh1nSLRAWZ6KFGR8="
   [mod."golang.org/x/sys"]
     version = "v0.18.0"
     hash = "sha256-bIFhfFp7Sj0E1gcE3X3l/jecCfSRLgrkb8f0Yr6tVR0="

@@ -6,11 +6,11 @@ import "github.com/milosgajdos/orbnet/pkg/graph/style"
 type Entity int
 
 const (
-	Owner Entity = iota
-	Repo
-	Topic
-	Lang
-	Link
+	OwnerEntity Entity = iota
+	RepoEntity
+	TopicEntity
+	LangEntity
+	LinkEntity
 )
 
 const (
@@ -25,15 +25,15 @@ const (
 // String implements fmt.Stringer
 func (e Entity) String() string {
 	switch e {
-	case Owner:
+	case OwnerEntity:
 		return ownerString
-	case Repo:
+	case RepoEntity:
 		return repoString
-	case Topic:
+	case TopicEntity:
 		return topicString
-	case Lang:
+	case LangEntity:
 		return langString
-	case Link:
+	case LinkEntity:
 		return linkString
 	default:
 		return unknownString
@@ -43,31 +43,31 @@ func (e Entity) String() string {
 // DefaultStyle returns default style.Style.
 func (e Entity) DefaultStyle() style.Style {
 	switch e {
-	case Owner:
+	case OwnerEntity:
 		return style.Style{
 			Type:  DefaultStyleType,
 			Shape: OwnerShape,
 			Color: OwnerColor,
 		}
-	case Repo:
+	case RepoEntity:
 		return style.Style{
 			Type:  DefaultStyleType,
 			Shape: RepoShape,
 			Color: RepoColor,
 		}
-	case Topic:
+	case TopicEntity:
 		return style.Style{
 			Type:  DefaultStyleType,
 			Shape: TopicShape,
 			Color: TopicColor,
 		}
-	case Lang:
+	case LangEntity:
 		return style.Style{
 			Type:  DefaultStyleType,
 			Shape: LangShape,
 			Color: LangColor,
 		}
-	case Link:
+	case LinkEntity:
 		return style.Style{
 			Type:  DefaultStyleType,
 			Shape: LinkShape,

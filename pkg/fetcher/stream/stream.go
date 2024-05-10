@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/google/go-github/v34/github"
+	"github.com/google/go-github/v61/github"
 )
 
 type Fetcher struct {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/google/go-github/v34/github"
+	"github.com/google/go-github/v61/github"
 	"github.com/milosgajdos/orbnet/pkg/graph"
 	"github.com/milosgajdos/orbnet/pkg/graph/memory"
 	"github.com/milosgajdos/orbnet/pkg/graph/style"
@@ -16,7 +16,7 @@ const (
 	DefaultWeight = 1.0
 )
 
-// Stars is a stars builder.
+// Stars builds GitHub stars graph.
 type Stars struct {
 	g     graph.Adder
 	nodes map[string]*memory.Node
@@ -32,14 +32,10 @@ func NewBuilder(g graph.Adder) (*Stars, error) {
 	}, nil
 }
 
-func (s *Stars) addNode(uid, name, fullName, label string, style style.Style) (*memory.Node, error) {
-	attrs := map[string]interface{}{
-		"name":      name,
-		"full_name": fullName,
-		"style":     style.Type,
-		"shape":     style.Shape,
-		"color":     style.Color,
-	}
+func (s *Stars) addNode(uid, label string, attrs map[string]interface{}, style style.Style) (*memory.Node, error) {
+	attrs["style"] = style.Type
+	attrs["shape"] = style.Shape
+	attrs["color"] = style.Color
 
 	opts := []memory.Option{
 		memory.WithUID(uid),
@@ -59,14 +55,10 @@ func (s *Stars) addNode(uid, name, fullName, label string, style style.Style) (*
 	return n, nil
 }
 
-func (s *Stars) linkNodes(from, to *memory.Node, relation, label string, weight float64, style style.Style) (*memory.Edge, error) {
-	attrs := map[string]interface{}{
-		"relation": relation,
-		"style":    style.Type,
-		"shape":    style.Shape,
-		"color":    style.Color,
-		"weight":   weight,
-	}
+func (s *Stars) linkNodes(from, to *memory.Node, label string, attrs map[string]interface{}, style style.Style) (*memory.Edge, error) {
+	attrs["style"] = style.Type
+	attrs["shape"] = style.Shape
+	attrs["color"] = style.Color
 
 	opts := []memory.Option{
 		memory.WithLabel(label),
@@ -88,17 +80,13 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 	defer s.mu.Unlock()
 
 	for _, repo := range repos {
-		owner := *repo.Repository.Owner.Login
-		if repo.Repository.Organization != nil {
-			owner = *repo.Repository.Organization.Login
-		}
-
-		uid := owner + "-" + Owner.String()
+		uid := *repo.Repository.Owner.NodeID
 		ownerNode, ok := s.nodes[uid]
 		if !ok {
-			style := Owner.DefaultStyle()
-			label := Owner.String()
-			ownerNode, err = s.addNode(uid, owner, owner, label, style)
+			style := OwnerEntity.DefaultStyle()
+			label := OwnerEntity.String()
+			attrs := OwnerAttrs(repo.Repository.Owner)
+			ownerNode, err = s.addNode(uid, label, attrs, style)
 			if err != nil {
 				return err
 			}
@@ -108,9 +96,10 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 		uid = *repo.Repository.NodeID
 		repoNode, ok := s.nodes[uid]
 		if !ok {
-			style := Repo.DefaultStyle()
-			label := Repo.String()
-			repoNode, err = s.addNode(uid, *repo.Repository.Name, *repo.Repository.FullName, label, style)
+			style := RepoEntity.DefaultStyle()
+			label := RepoEntity.String()
+			attrs := RepoAttrs(repo.Repository, repo.StarredAt)
+			repoNode, err = s.addNode(uid, label, attrs, style)
 			if err != nil {
 				return err
 			}
@@ -118,21 +107,22 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 		}
 
 		if e := s.g.Edge(repoNode.ID(), ownerNode.ID()); e == nil {
-			style := Link.DefaultStyle()
+			style := LinkEntity.DefaultStyle()
 			rel := OwnedByEdgeLabel
-			if _, err := s.linkNodes(repoNode, ownerNode, rel, rel, DefaultWeight, style); err != nil {
+			attrs := LinkAttrs(rel, DefaultWeight)
+			if _, err := s.linkNodes(repoNode, ownerNode, rel, attrs, style); err != nil {
 				return err
 			}
 		}
 
 		for _, topic := range repo.Repository.Topics {
-			uid = strings.ToLower(topic) + "-" + Topic.String()
+			uid = strings.ToLower(topic) + "-" + TopicEntity.String()
 			topicNode, ok := s.nodes[uid]
 			if !ok {
-				style := Topic.DefaultStyle()
-				label := Topic.String()
-				name := strings.ToLower(topic)
-				topicNode, err = s.addNode(uid, name, name, label, style)
+				style := TopicEntity.DefaultStyle()
+				label := TopicEntity.String()
+				attrs := TopicAttrs(strings.ToLower(topic))
+				topicNode, err = s.addNode(uid, label, attrs, style)
 				if err != nil {
 					return err
 				}
@@ -140,22 +130,23 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 			}
 
 			if e := s.g.Edge(repoNode.ID(), topicNode.ID()); e == nil {
-				style := Link.DefaultStyle()
-				rel := TopicEdgeLabel
-				if _, err := s.linkNodes(repoNode, topicNode, rel, rel, DefaultWeight, style); err != nil {
+				style := LinkEntity.DefaultStyle()
+				rel := HasTopicEdgeLabel
+				attrs := LinkAttrs(rel, DefaultWeight)
+				if _, err := s.linkNodes(repoNode, topicNode, rel, attrs, style); err != nil {
 					return err
 				}
 			}
 		}
 
 		if repo.Repository.Language != nil {
-			uid = strings.ToLower(*repo.Repository.Language) + "-" + Lang.String()
+			uid = strings.ToLower(*repo.Repository.Language) + "-" + LangEntity.String()
 			langNode, ok := s.nodes[uid]
 			if !ok {
-				style := Lang.DefaultStyle()
-				label := Lang.String()
-				name := strings.ToLower(*repo.Repository.Language)
-				langNode, err = s.addNode(uid, name, name, label, style)
+				style := LangEntity.DefaultStyle()
+				label := LangEntity.String()
+				attrs := LangAttrs(strings.ToLower(*repo.Repository.Language))
+				langNode, err = s.addNode(uid, label, attrs, style)
 				if err != nil {
 					return err
 				}
@@ -163,9 +154,10 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 			}
 
 			if e := s.g.Edge(repoNode.ID(), langNode.ID()); e == nil {
-				style := Link.DefaultStyle()
-				rel := LangEdgeLabel
-				if _, err := s.linkNodes(repoNode, langNode, rel, rel, DefaultWeight, style); err != nil {
+				style := LinkEntity.DefaultStyle()
+				rel := IsLangEdgeLabel
+				attrs := LinkAttrs(rel, DefaultWeight)
+				if _, err := s.linkNodes(repoNode, langNode, rel, attrs, style); err != nil {
 					return err
 				}
 			}
