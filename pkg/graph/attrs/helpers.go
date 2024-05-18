@@ -1,9 +1,17 @@
 package attrs
 
 import (
+	"errors"
 	"fmt"
 	"image/color"
+	"reflect"
+	"strings"
 	"time"
+	"unicode"
+)
+
+var (
+	ErrInvalidInput = errors.New("invalid input")
 )
 
 // CopyFrom creates a copy of a and returns it.
@@ -98,4 +106,110 @@ func ToStringMap(a map[string]interface{}) map[string]string {
 	}
 
 	return m
+}
+
+func toSnakeCase(s string) string {
+	var words []string
+	var currentWord strings.Builder
+
+	for _, r := range s {
+		if unicode.IsUpper(r) && currentWord.Len() > 0 {
+			words = append(words, currentWord.String())
+			currentWord.Reset()
+		}
+		currentWord.WriteRune(unicode.ToLower(r))
+	}
+
+	if currentWord.Len() > 0 {
+		words = append(words, currentWord.String())
+	}
+
+	return strings.Join(words, "_")
+}
+
+func flattenValue(value reflect.Value) interface{} {
+	if value.Kind() == reflect.Ptr {
+		if value.IsNil() {
+			return nil
+		}
+		value = value.Elem()
+	}
+
+	if value.Kind() == reflect.Struct && value.Type().NumField() == 1 && value.Type().Field(0).Anonymous {
+		return flattenValue(value.Field(0))
+	}
+
+	return value.Interface()
+}
+
+func parseJSONTag(tag, fieldName string) string {
+	if tag == "" || tag == "-" {
+		return toSnakeCase(fieldName)
+	}
+	if idx := strings.Index(tag, ","); idx != -1 {
+		return tag[:idx]
+	}
+	return tag
+}
+
+// Encode encodes arbitrary structs into attributes map.
+func Encode(input interface{}) (map[string]interface{}, error) {
+	value := reflect.ValueOf(input)
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+	if !value.IsValid() {
+		return nil, fmt.Errorf("empty value: %w", ErrInvalidInput)
+	}
+
+	if value.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("must be struct: %v", ErrInvalidInput)
+	}
+
+	result := make(map[string]interface{})
+	repoType := value.Type()
+
+	for i := 0; i < value.NumField(); i++ {
+		field := repoType.Field(i)
+		// Skip unexported fields
+		if !field.IsExported() {
+			continue
+		}
+
+		fieldValue := value.Field(i)
+		// Skip zero values
+		if fieldValue.IsZero() {
+			continue
+		}
+
+		jsonTag := parseJSONTag(field.Tag.Get("json"), field.Name)
+
+		if fieldValue.Kind() == reflect.Ptr {
+			if fieldValue.IsNil() {
+				continue
+			}
+			fieldValue = fieldValue.Elem()
+		}
+
+		switch fieldValue.Kind() {
+		case reflect.Struct:
+			// Check if the struct is a wrapper type
+			if fieldValue.Type().NumField() == 1 && fieldValue.Type().Field(0).Anonymous {
+				// Flatten the wrapper type e.g. type Timestamp{time.Time}
+				if val := flattenValue(fieldValue.Field(0)); val != nil {
+					result[jsonTag] = val
+				}
+				continue
+			}
+			var err error
+			result[jsonTag], err = Encode(fieldValue)
+			if err != nil {
+				return nil, err
+			}
+		default:
+			result[jsonTag] = fieldValue.Interface()
+		}
+	}
+
+	return result, nil
 }

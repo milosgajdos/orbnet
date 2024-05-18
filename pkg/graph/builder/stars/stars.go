@@ -85,7 +85,10 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 		if !ok {
 			style := OwnerEntity.DefaultStyle()
 			label := OwnerEntity.String()
-			attrs := OwnerAttrs(repo.Repository.Owner)
+			attrs, err := OwnerAttrs(repo.Repository.Owner)
+			if err != nil {
+				return err
+			}
 			ownerNode, err = s.addNode(uid, label, attrs, style)
 			if err != nil {
 				return err
@@ -98,7 +101,10 @@ func (s *Stars) update(repos []*github.StarredRepository) (err error) {
 		if !ok {
 			style := RepoEntity.DefaultStyle()
 			label := RepoEntity.String()
-			attrs := RepoAttrs(repo.Repository, repo.StarredAt)
+			attrs, err := RepoAttrs(repo.Repository, repo.StarredAt)
+			if err != nil {
+				return err
+			}
 			repoNode, err = s.addNode(uid, label, attrs, style)
 			if err != nil {
 				return err

@@ -22,7 +22,7 @@ type Edge struct {
 type EdgeService interface {
 	// CreateEdge creates a new edge.
 	CreateEdge(ctx context.Context, uid string, e *Edge) error
-	// FindEdgeByUID returns a single edge with the given id.
+	// FindEdgeByUID returns a single edge with the given uid.
 	FindEdgeByUID(ctx context.Context, guid, euid string) (*Edge, error)
 	// FindEdges returns all edges matching the filter.
 	// It also returns a count of total matching edges which may differ from
