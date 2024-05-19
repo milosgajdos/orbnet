@@ -36,7 +36,7 @@ func (f *Fetcher) GetTotalPages(ctx context.Context, paging int) (int, error) {
 		},
 	}
 
-	_, resp, err := client.Activity.ListStarred(context.Background(), f.user, opts)
+	_, resp, err := client.Activity.ListStarred(ctx, f.user, opts)
 	if err != nil {
 		return 0, err
 	}
@@ -60,7 +60,7 @@ func (f *Fetcher) Fetch(ctx context.Context, startPage, endPage int, reposChan c
 			},
 		}
 
-		repos, _, err := client.Activity.ListStarred(context.Background(), "", opts)
+		repos, _, err := client.Activity.ListStarred(ctx, "", opts)
 		if err != nil {
 			return fmt.Errorf("error fetching page %d: %v", page, err)
 		}
