@@ -19,8 +19,8 @@ func (t *Tx) CreateGraph(ctx context.Context, g *api.Graph) error {
 		opts = append(opts, memory.WithUID(g.UID))
 	}
 
-	if g.Label != "" {
-		opts = append(opts, memory.WithLabel(g.Label))
+	if *g.Label != "" {
+		opts = append(opts, memory.WithLabel(*g.Label))
 	}
 
 	if g.Attrs != nil {
@@ -42,10 +42,9 @@ func (t *Tx) CreateGraph(ctx context.Context, g *api.Graph) error {
 	t.db.db[mg.UID()] = mg
 
 	g.UID = mg.UID()
-	g.Type = mg.Type()
 	g.Nodes = mg.Nodes().Len()
 	g.Edges = mg.Edges().Len()
-	g.Label = mg.Label()
+	g.Label = StringPtr(mg.Label())
 	g.Attrs = mg.Attrs()
 
 	return nil
@@ -81,12 +80,6 @@ func (t *Tx) FindGraphs(ctx context.Context, filter api.GraphFilter) ([]*memory.
 			return graphs, 0, nil
 		}
 
-		if t := filter.Type; t != nil {
-			if g.Type() != *t {
-				return graphs, 0, nil
-			}
-		}
-
 		if l := filter.Label; l != nil {
 			if g.Label() != *l {
 				return graphs, 0, nil
@@ -98,12 +91,6 @@ func (t *Tx) FindGraphs(ctx context.Context, filter api.GraphFilter) ([]*memory.
 	}
 
 	for _, g := range t.db.db {
-		if t := filter.Type; t != nil {
-			if g.Type() != *t {
-				continue
-			}
-		}
-
 		if l := filter.Label; l != nil {
 			if g.Label() != *l {
 				continue

@@ -103,6 +103,10 @@ func (db *DB) BeginTx(ctx context.Context) (*Tx, error) {
 	}, nil
 }
 
+func StringPtr(s string) *string {
+	return &s
+}
+
 // openFromFS opens DB and loads all data stored on the given fs.
 //
 // TODO(milosgajods): allow to specify graph.Unmarshaler for unmarshaling graph stored in path.

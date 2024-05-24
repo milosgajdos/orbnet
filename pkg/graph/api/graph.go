@@ -2,22 +2,24 @@ package api
 
 import (
 	"context"
+	"time"
 )
 
 // Graph contains nodes connected by edges.
 type Graph struct {
 	// UID is graph UUID.
 	UID string `json:"uid,omitempty"`
-	// Type is a type of graph.
-	Type string `json:"type,omitempty"`
 	// Nodes is the node count.
 	Nodes int `json:"nodes"`
 	// Edge is the edge count.
 	Edges int `json:"edges"`
 	// Label is graph label.
-	Label string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty"`
 	// Attrs are graph attributes.
 	Attrs map[string]interface{} `json:"attributes,omitempty"`
+	// Timestamps for graph creation & last update.
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // GraphService represents a service for managing Graphs.
@@ -40,7 +42,6 @@ type GraphService interface {
 type GraphFilter struct {
 	// Filtering fields.
 	UID   *string `json:"uid"`
-	Type  *string `json:"type"`
 	Label *string `json:"label"`
 	// Restrict to subset of range.
 	Offset int `json:"offset"`

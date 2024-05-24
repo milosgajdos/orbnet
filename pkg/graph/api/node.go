@@ -43,8 +43,12 @@ type NodeService interface {
 // NodeFilter represents a filter used by FindNodes().
 type NodeFilter struct {
 	// Filtering fields.
-	ID    *int64  `json:"id"`
-	To    *int64  `json:"to"`
+	ID *int64 `json:"id"`
+	// To gets all nodes that
+	// can reach this node.
+	To *int64 `json:"to"`
+	// From gets all nodes
+	// reachable from this node.
 	From  *int64  `json:"from"`
 	UID   *string `json:"uid"`
 	Label *string `json:"label"`

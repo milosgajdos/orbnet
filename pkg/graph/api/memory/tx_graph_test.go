@@ -16,7 +16,7 @@ func TestTxCreateGraph(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
-		g := &api.Graph{Label: "testGraph", Attrs: map[string]interface{}{"foo": 1}}
+		g := &api.Graph{Label: StringPtr("testGraph"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
@@ -27,12 +27,12 @@ func TestTxCreateGraph(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}
 
-		g2 := &api.Graph{Label: "testGraph", UID: g.UID}
+		g2 := &api.Graph{Label: StringPtr("testGraph"), UID: g.UID}
 		if err := tx.CreateGraph(ctx, g2); api.ErrorCode(err) != api.ECONFLICT {
 			t.Fatal(err)
 		}
@@ -48,7 +48,7 @@ func TestTxFindGraphByUID(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}
@@ -67,7 +67,7 @@ func TestTxFindGraphByUID(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}
@@ -87,11 +87,9 @@ func TestTxFindGraphs(t *testing.T) {
 	// NOTE(milosgajdos): these come from testdata/sample.json
 	testUID := "cc099040-9dab-4f3d-848e-3046912aa281"
 	testLabel := "test"
-	testType := "weighted_directed"
 
 	randUID := "randUID"
 	randLabel := "randLabel"
-	randType := "randType"
 
 	testCases := []struct {
 		name       string
@@ -104,19 +102,16 @@ func TestTxFindGraphs(t *testing.T) {
 		{"UIDNonexist", api.GraphFilter{UID: &randUID}, 0, 0, false},
 		{"UIDOk", api.GraphFilter{UID: &testUID}, 1, 1, false},
 		{"UIDOkLabelOk", api.GraphFilter{UID: &testUID, Label: &testLabel}, 1, 1, false},
-		{"UIDOkLabelOkTypeOk", api.GraphFilter{UID: &testUID, Label: &testLabel, Type: &testType}, 1, 1, false},
+		{"UIDOkLabelOkTypeOk", api.GraphFilter{UID: &testUID, Label: &testLabel}, 1, 1, false},
 		{"UIDOkLabelNonexist", api.GraphFilter{UID: &testUID, Label: &randLabel}, 0, 0, false},
-		{"UIDOkTypeNonexist", api.GraphFilter{UID: &testUID, Type: &randType}, 0, 0, false},
-		{"TypeNoneLabelNone", api.GraphFilter{}, 2, 2, false},
-		{"TypeNoneLabelOk", api.GraphFilter{Label: &testLabel}, 2, 2, false},
-		{"TypeOkLabelOk", api.GraphFilter{Label: &testLabel, Type: &testType}, 2, 2, false},
-		{"TypeNoneLabelNonexist", api.GraphFilter{Label: &randLabel}, 0, 0, false},
-		{"TypeNonexistLabelNone", api.GraphFilter{Type: &randType}, 0, 0, false},
-		{"LimitNoneOffsetLarge", api.GraphFilter{Type: &testType, Offset: 100}, 0, 2, false},
-		{"LimitNoneOffsetNegative", api.GraphFilter{Type: &testType, Offset: -1}, 2, 2, false},
-		{"LimitNoneOffsetOk", api.GraphFilter{Type: &testType, Offset: 1}, 1, 2, false},
-		{"LimitOkOffsetOk", api.GraphFilter{Type: &testType, Offset: 1, Limit: 1}, 1, 2, false},
-		{"LimitLargeOffsetOk", api.GraphFilter{Type: &testType, Offset: 1, Limit: 10}, 1, 2, false},
+		{"LabelNone", api.GraphFilter{}, 2, 2, false},
+		{"LabelOk", api.GraphFilter{Label: &testLabel}, 2, 2, false},
+		{"LabelNonexist", api.GraphFilter{Label: &randLabel}, 0, 0, false},
+		{"LimitNoneOffsetLarge", api.GraphFilter{Offset: 100}, 0, 2, false},
+		{"LimitNoneOffsetNegative", api.GraphFilter{Offset: -1}, 2, 2, false},
+		{"LimitNoneOffsetOk", api.GraphFilter{Offset: 1}, 1, 2, false},
+		{"LimitOkOffsetOk", api.GraphFilter{Offset: 1, Limit: 1}, 1, 2, false},
+		{"LimitLargeOffsetOk", api.GraphFilter{Offset: 1, Limit: 10}, 1, 2, false},
 	}
 
 	ctx := context.TODO()
@@ -151,7 +146,7 @@ func TestTxUpdateGraph(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}
@@ -165,7 +160,7 @@ func TestTxUpdateGraph(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}
@@ -202,7 +197,7 @@ func TestTxUpdateGraph(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}
@@ -222,7 +217,7 @@ func TestTxDeleteGraph(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		g := &api.Graph{Label: "testGraph"}
+		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
 			t.Fatal(err)
 		}

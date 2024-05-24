@@ -117,7 +117,7 @@ func (b *Builder) Build(ctx context.Context, g graph.Adder, dataChan <-chan inte
 
 			if d, ok := data.(Graph); ok {
 				if l, ok := g.(graph.LabelSetter); ok {
-					l.SetLabel(d.Graph.Label)
+					l.SetLabel(*d.Graph.Label)
 				}
 
 				if u, ok := g.(graph.UIDSetter); ok {
