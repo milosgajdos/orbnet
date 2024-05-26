@@ -206,6 +206,9 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 
 	// To has been provided
 	if to := filter.Target; to != nil {
+		// TODO: make this more efficient
+		// This iterates over g.Nodes searching for to.
+		// We then iterate over all its incoming nodes.
 		node, err := t.findNodeByUID(ctx, g, *to)
 		if err != nil {
 			if code := api.ErrorCode(err); code == api.ENOTFOUND {
@@ -222,6 +225,9 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 
 	// From has been provided
 	if from := filter.Source; from != nil {
+		// TODO: make this more efficient
+		// This iterates over g.Nodes searching for from
+		// We then iterate over all its outgoing nodes.
 		node, err := t.findNodeByUID(ctx, g, *from)
 		if err != nil {
 			if code := api.ErrorCode(err); code == api.ENOTFOUND {
