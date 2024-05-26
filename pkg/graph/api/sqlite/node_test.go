@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
@@ -229,6 +230,70 @@ func TestNodeService_FindNodes(t *testing.T) {
 		}
 		if got, want := n, 1; got != want {
 			t.Fatalf("n=%v, want %v", got, want)
+		}
+	})
+}
+
+func TestNodeService_UpdateNode(t *testing.T) {
+	t.Run("OK", func(t *testing.T) {
+		db := MustOpenDB(t)
+		defer MustCloseDB(t, db)
+		ns := MustNodeService(t, db)
+
+		ctx := context.Background()
+		graphUID := "graph1un"
+		attrs := map[string]interface{}{
+			"foo": "bar",
+			"num": 5,
+		}
+		nodeUID := "node1un"
+		MustCreateGraph(ctx, t, db, &api.Graph{UID: graphUID, Label: StringPtr("Graph1un")})
+		MustCreateNode(ctx, t, db, graphUID, &api.Node{UID: nodeUID, Label: StringPtr("Node1un"), Attrs: attrs})
+
+		newLabel := "Node1Updated"
+		newAttrs := map[string]interface{}{
+			"foo": "baz",
+		}
+
+		un, err := ns.UpdateNode(ctx, graphUID, 1, api.NodeUpdate{
+			Label: &newLabel,
+			Attrs: newAttrs,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if *un.Label != newLabel {
+			t.Fatalf("label=%v, want=%v", *un.Label, newLabel)
+		}
+		expAttrs := map[string]interface{}{
+			"foo": "baz",
+			"num": int64(5),
+		}
+		if !reflect.DeepEqual(expAttrs, un.Attrs) {
+			t.Fatalf("expected: %#v, got: %#v", expAttrs, un.Attrs)
+		}
+
+		got, err := ns.FindNodeByUID(context.Background(), graphUID, nodeUID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, want := *got.Label, *un.Label; got != want {
+			t.Fatalf("label=%v, want %v", got, want)
+		}
+		if !reflect.DeepEqual(expAttrs, got.Attrs) {
+			t.Fatalf("expected: %#v, got: %#v", expAttrs, got.Attrs)
+		}
+	})
+
+	t.Run("NonExistent", func(t *testing.T) {
+		db := MustOpenDB(t)
+		defer MustCloseDB(t, db)
+		ns := MustNodeService(t, db)
+
+		_, err := ns.UpdateNode(context.Background(), "graph1", 999, api.NodeUpdate{Label: StringPtr("NonExistent")})
+		if err == nil {
+			t.Fatal("expected error")
 		}
 	})
 }

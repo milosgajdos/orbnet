@@ -92,11 +92,11 @@ func findNodes(ctx context.Context, tx *Tx, graphUID string, filter api.NodeFilt
 	case filter.UID != nil:
 		where, args = append(where, "uid = ?"), append(args, *filter.UID)
 	case filter.To != nil:
-		where = append(where, "uid IN (SELECT source FROM edges WHERE target = (SELECT uid FROM nodes WHERE id = ?) AND graph = ?)")
-		args = append(args, *filter.To, graphUID)
+		where = append(where, "uid IN (SELECT source FROM edges WHERE target = (SELECT uid FROM nodes WHERE id = ? AND graph = ?) AND graph = ?)")
+		args = append(args, *filter.To, graphUID, graphUID)
 	case filter.From != nil:
-		where = append(where, "uid IN (SELECT target FROM edges WHERE source = (SELECT uid FROM nodes WHERE id = ?) AND graph = ?)")
-		args = append(args, *filter.From, graphUID)
+		where = append(where, "uid IN (SELECT target FROM edges WHERE source = (SELECT uid FROM nodes WHERE id = ? AND graph = ?) AND graph = ?)")
+		args = append(args, *filter.From, graphUID, graphUID)
 	}
 	if v := filter.Label; v != nil {
 		where, args = append(where, "label = ?"), append(args, *v)
