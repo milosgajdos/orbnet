@@ -143,6 +143,7 @@ func TestTxFindNodes(t *testing.T) {
 	graphUID := "cc099040-9dab-4f3d-848e-3046912aa281"
 
 	testID := int64(1)
+	testUID := "3ba4972d-c780-4308-9ca8-fe466b60da20"
 	testLabel := "Repo"
 	toTestLabel := "Topic"
 	fromTestLabel := "Owner"
@@ -165,12 +166,12 @@ func TestTxFindNodes(t *testing.T) {
 		{"IDMatch", graphUID, api.NodeFilter{ID: &testID}, 1, 1, false},
 		{"IDMatch_LabelMatch", graphUID, api.NodeFilter{ID: &testID, Label: &testLabel}, 1, 1, false},
 		{"IDMatch_LabelNoMatch", graphUID, api.NodeFilter{ID: &testID, Label: &randLabel}, 0, 0, false},
-		{"ToIDMatch", graphUID, api.NodeFilter{To: &testID}, 2, 2, false},
-		{"ToIDMatch_LabelMatch", graphUID, api.NodeFilter{To: &testID, Label: &toTestLabel}, 2, 2, false},
-		{"ToIDMatch_LabelNoMatch", graphUID, api.NodeFilter{To: &testID, Label: &randLabel}, 0, 0, false},
-		{"FromIDMatch", graphUID, api.NodeFilter{From: &testID}, 2, 2, false},
-		{"FromIDMatch_LabelMatch", graphUID, api.NodeFilter{From: &testID, Label: &fromTestLabel}, 2, 2, false},
-		{"FromIDMatch_LabelNoMatch", graphUID, api.NodeFilter{From: &testID, Label: &randLabel}, 0, 0, false},
+		{"ToIDMatch", graphUID, api.NodeFilter{Target: &testUID}, 2, 2, false},
+		{"ToIDMatch_LabelMatch", graphUID, api.NodeFilter{Target: &testUID, Label: &toTestLabel}, 2, 2, false},
+		{"ToIDMatch_LabelNoMatch", graphUID, api.NodeFilter{Target: &testUID, Label: &randLabel}, 0, 0, false},
+		{"FromIDMatch", graphUID, api.NodeFilter{Source: &testUID}, 2, 2, false},
+		{"FromIDMatch_LabelMatch", graphUID, api.NodeFilter{Source: &testUID, Label: &fromTestLabel}, 2, 2, false},
+		{"FromIDMatch_LabelNoMatch", graphUID, api.NodeFilter{Source: &testUID, Label: &randLabel}, 0, 0, false},
 		{"LabelOnly", graphUID, api.NodeFilter{Label: &testLabel}, 2, 2, false},
 		{"LabelOnly_WithOffsetLimit", graphUID, api.NodeFilter{Label: &testLabel, Offset: 1, Limit: 1}, 1, 2, false},
 		{"LabelOnly_WithNegOffset", graphUID, api.NodeFilter{Label: &testLabel, Offset: -1}, 2, 2, false},

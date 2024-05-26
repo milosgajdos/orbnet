@@ -91,12 +91,12 @@ func findNodes(ctx context.Context, tx *Tx, graphUID string, filter api.NodeFilt
 		where, args = append(where, "id = ?"), append(args, *filter.ID)
 	case filter.UID != nil:
 		where, args = append(where, "uid = ?"), append(args, *filter.UID)
-	case filter.To != nil:
-		where = append(where, "uid IN (SELECT source FROM edges WHERE target = (SELECT uid FROM nodes WHERE id = ? AND graph = ?) AND graph = ?)")
-		args = append(args, *filter.To, graphUID, graphUID)
-	case filter.From != nil:
-		where = append(where, "uid IN (SELECT target FROM edges WHERE source = (SELECT uid FROM nodes WHERE id = ? AND graph = ?) AND graph = ?)")
-		args = append(args, *filter.From, graphUID, graphUID)
+	case filter.Target != nil:
+		where = append(where, "uid IN (SELECT source FROM edges WHERE target = ? AND graph = ?)")
+		args = append(args, *filter.Target, graphUID, graphUID)
+	case filter.Source != nil:
+		where = append(where, "uid IN (SELECT target FROM edges WHERE source = ? AND graph = ?)")
+		args = append(args, *filter.Source, graphUID, graphUID)
 	}
 	if v := filter.Label; v != nil {
 		where, args = append(where, "label = ?"), append(args, *v)
@@ -346,7 +346,7 @@ func deleteNodeByID(ctx context.Context, tx *Tx, graphUID string, id int64) erro
 	return nil
 }
 
-// DeleteNodeByUID permanently removes a node by UID.
+// DeleteNodeByID permanently removes a node by ID.
 // It automatically removes removed node's incoming and outgoing edges.
 func (ns *NodeService) DeleteNodeByID(ctx context.Context, graphUID string, id int64) error {
 	tx, err := ns.db.BeginTx(ctx, nil)

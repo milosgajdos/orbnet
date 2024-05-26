@@ -205,8 +205,15 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 	var err error
 
 	// To has been provided
-	if to := filter.To; to != nil {
-		nodes, err = filterNodes(ctx, g.To(*to), g, filter)
+	if to := filter.Target; to != nil {
+		node, err := t.findNodeByUID(ctx, g, *to)
+		if err != nil {
+			if code := api.ErrorCode(err); code == api.ENOTFOUND {
+				return []*TxNode{}, 0, nil
+			}
+			return nil, 0, err
+		}
+		nodes, err = filterNodes(ctx, g.To(node.ID()), g, filter)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -214,8 +221,15 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 	}
 
 	// From has been provided
-	if from := filter.From; from != nil {
-		nodes, err = filterNodes(ctx, g.From(*from), g, filter)
+	if from := filter.Source; from != nil {
+		node, err := t.findNodeByUID(ctx, g, *from)
+		if err != nil {
+			if code := api.ErrorCode(err); code == api.ENOTFOUND {
+				return []*TxNode{}, 0, nil
+			}
+			return nil, 0, err
+		}
+		nodes, err = filterNodes(ctx, g.From(node.ID()), g, filter)
 		if err != nil {
 			return nil, 0, err
 		}

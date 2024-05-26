@@ -171,8 +171,8 @@ func TestNodeService_FindNodes(t *testing.T) {
 
 	t.Run("To", func(t *testing.T) {
 		// node2fn node
-		to := nodes[1].ID
-		nx, n, err := ns.FindNodes(ctx, graphUID, api.NodeFilter{To: &to})
+		Target := nodes[1].UID
+		nx, n, err := ns.FindNodes(ctx, graphUID, api.NodeFilter{Target: &Target})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -194,8 +194,8 @@ func TestNodeService_FindNodes(t *testing.T) {
 	})
 
 	t.Run("From", func(t *testing.T) {
-		from := nodes[0].ID
-		nx, n, err := ns.FindNodes(ctx, graphUID, api.NodeFilter{From: &from})
+		source := nodes[0].UID
+		nx, n, err := ns.FindNodes(ctx, graphUID, api.NodeFilter{Source: &source})
 		if err != nil {
 			t.Fatal(err)
 		}

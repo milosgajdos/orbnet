@@ -52,12 +52,12 @@ type NodeFilter struct {
 	ID    *int64  `json:"id"`
 	UID   *string `json:"uid"`
 	Label *string `json:"label"`
-	// To gets all nodes that
+	// Target gets all nodes that
 	// can reach this node.
-	To *int64 `json:"to"`
-	// From gets all nodes
+	Target *string `json:"target"`
+	// Source gets all nodes
 	// reachable from this node.
-	From *int64 `json:"from"`
+	Source *string `json:"source"`
 	// Restrict to subset of range.
 	Offset int `json:"offset"`
 	Limit  int `json:"limit"`
