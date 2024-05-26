@@ -20,7 +20,7 @@ func TestTxCreateNode(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -31,7 +31,7 @@ func TestTxCreateNode(t *testing.T) {
 		ctx := context.TODO()
 		tx := MustOpenTx(t, ctx, MemoryDSN)
 
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, "foo", n); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -51,7 +51,7 @@ func TestTxFindNodeByID(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -74,7 +74,7 @@ func TestTxFindNodeByID(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -98,7 +98,7 @@ func TestTxFindNodeByiUID(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -121,7 +121,7 @@ func TestTxFindNodeByiUID(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -220,7 +220,7 @@ func TestTxUpdateNode(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -238,7 +238,7 @@ func TestTxUpdateNode(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -279,7 +279,7 @@ func TestTxUpdateNode(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -290,8 +290,8 @@ func TestTxUpdateNode(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if n.Label != n2.Label() {
-			t.Errorf("expected label: %s, got: %s", n.Label, n2.Label())
+		if *n.Label != n2.Label() {
+			t.Errorf("expected label: %s, got: %s", *n.Label, n2.Label())
 		}
 	})
 }
@@ -308,7 +308,7 @@ func TestTxDeleteNodeByID(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -341,7 +341,7 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)

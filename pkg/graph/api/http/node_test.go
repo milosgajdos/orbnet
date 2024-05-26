@@ -427,7 +427,7 @@ func TestCreateNode(t *testing.T) {
 			"two": "twostring",
 		}
 		apiNode := &api.Node{
-			Label: label,
+			Label: StringPtr(label),
 			Attrs: attrs,
 		}
 
@@ -461,8 +461,8 @@ func TestCreateNode(t *testing.T) {
 			t.Fatalf("failed to decode body: %v", err)
 		}
 
-		if g.Label != label {
-			t.Fatalf("expected label: %s, got: %s", label, g.Label)
+		if *g.Label != label {
+			t.Fatalf("expected label: %s, got: %s", label, *g.Label)
 		}
 
 		if !reflect.DeepEqual(g.Attrs, attrs) {
@@ -481,7 +481,7 @@ func TestCreateNode(t *testing.T) {
 			"two": "twostring",
 		}
 		apiNode := &api.Node{
-			Label: label,
+			Label: StringPtr(label),
 			Attrs: attrs,
 		}
 
@@ -517,7 +517,7 @@ func TestCreateNode(t *testing.T) {
 			"two": "twostring",
 		}
 		apiNode := &api.Node{
-			Label: label,
+			Label: StringPtr(label),
 			Attrs: attrs,
 		}
 
@@ -558,7 +558,7 @@ func TestCreateNode(t *testing.T) {
 			"two": "twostring",
 		}
 		apiNode := &api.Node{
-			Label: label,
+			Label: StringPtr(label),
 			Attrs: attrs,
 		}
 
@@ -626,8 +626,8 @@ func TestUpdateNode(t *testing.T) {
 			t.Fatalf("failed to decode body: %v", err)
 		}
 
-		if g.Label != label {
-			t.Fatalf("expected label: %s, got: %s", label, g.Label)
+		if *g.Label != label {
+			t.Fatalf("expected label: %s, got: %s", label, *g.Label)
 		}
 	})
 

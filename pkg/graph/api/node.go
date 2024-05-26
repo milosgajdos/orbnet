@@ -1,6 +1,9 @@
 package api
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // Node is a graph node.
 type Node struct {
@@ -13,13 +16,18 @@ type Node struct {
 	// DegIn is the count of incoming edges.
 	DegIn int `json:"deg_in"`
 	// Label is node label
-	Label string `json:"label"`
+	Label *string `json:"label"`
 	// Attrs are node attributes
 	Attrs map[string]interface{} `json:"attributes,omitempty"`
+	// Timestamps for graph creation & last update.
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // NodeService represents a service for managing graph nodes.
 type NodeService interface {
+	// CreateNode creates a new node.
+	CreateNode(ctx context.Context, uid string, n *Node) error
 	// FindNodeByID returns a single node with the given id.
 	FindNodeByID(ctx context.Context, uid string, id int64) (*Node, error)
 	// FindNodeByUID returns a single node with the given uid.
@@ -28,8 +36,6 @@ type NodeService interface {
 	// It also returns a count of total matching nodes which may differ from
 	// the number of returned nodes if the Limit field is set.
 	FindNodes(ctx context.Context, uid string, filter NodeFilter) ([]*Node, int, error)
-	// CreateNode creates a new node.
-	CreateNode(ctx context.Context, uid string, n *Node) error
 	// UpdateNode updates an existing node by ID.
 	UpdateNode(ctx context.Context, uid string, id int64, update NodeUpdate) (*Node, error)
 	// DeleteNodeByUID permanently removes a node by UID.
@@ -43,15 +49,15 @@ type NodeService interface {
 // NodeFilter represents a filter used by FindNodes().
 type NodeFilter struct {
 	// Filtering fields.
-	ID *int64 `json:"id"`
+	ID    *int64  `json:"id"`
+	UID   *string `json:"uid"`
+	Label *string `json:"label"`
 	// To gets all nodes that
 	// can reach this node.
 	To *int64 `json:"to"`
 	// From gets all nodes
 	// reachable from this node.
-	From  *int64  `json:"from"`
-	UID   *string `json:"uid"`
-	Label *string `json:"label"`
+	From *int64 `json:"from"`
 	// Restrict to subset of range.
 	Offset int `json:"offset"`
 	Limit  int `json:"limit"`

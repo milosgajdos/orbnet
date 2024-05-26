@@ -49,7 +49,7 @@ func TestCreateNode(t *testing.T) {
 
 		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -59,7 +59,7 @@ func TestCreateNode(t *testing.T) {
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		ns := MustNodeService(t, MemoryDSN)
 
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := ns.CreateNode(context.TODO(), "rangraphuid", n); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -77,7 +77,7 @@ func TestFindNodeByID(t *testing.T) {
 
 		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -194,7 +194,7 @@ func TestUpdateNode(t *testing.T) {
 
 		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -218,8 +218,8 @@ func TestUpdateNode(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if node.Label != newLabel {
-			t.Fatalf("expected label: %s, got: %s", newLabel, node.Label)
+		if *node.Label != newLabel {
+			t.Fatalf("expected label: %s, got: %s", newLabel, *node.Label)
 		}
 
 		if val := node.Attrs[fooKey]; val != fooVal {
@@ -261,7 +261,7 @@ func TestDeleteNodeByID(t *testing.T) {
 
 		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -290,7 +290,7 @@ func TestDeleteNodeByUID(t *testing.T) {
 		testGraphUID := "testUID"
 		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)

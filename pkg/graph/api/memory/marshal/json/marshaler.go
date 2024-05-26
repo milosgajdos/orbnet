@@ -57,7 +57,7 @@ func (m *Marshaler) Marshal(g graph.Graph) ([]byte, error) {
 			UID:    n.UID(),
 			DegOut: degOut,
 			DegIn:  degIn,
-			Label:  n.Label(),
+			Label:  StringPtr(n.Label()),
 			Attrs:  n.Attrs(),
 		}
 

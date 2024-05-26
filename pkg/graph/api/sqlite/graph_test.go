@@ -8,7 +8,7 @@ import (
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
 )
 
-// MustCreateGraph creates a user in the database. Fatal on error.
+// MustCreateGraph creates a graph in the database. Fatal on error.
 func MustCreateGraph(ctx context.Context, tb testing.TB, db *DB, graph *api.Graph) {
 	tb.Helper()
 	gs, err := NewGraphService(db)
@@ -20,14 +20,19 @@ func MustCreateGraph(ctx context.Context, tb testing.TB, db *DB, graph *api.Grap
 	}
 }
 
+func MustGraphService(t *testing.T, db *DB) *GraphService {
+	gs, err := NewGraphService(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return gs
+}
+
 func TestGraphService_CreateGraph(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
+		gs := MustGraphService(t, db)
 
 		g := &api.Graph{
 			UID:   "Foobar",
@@ -38,7 +43,7 @@ func TestGraphService_CreateGraph(t *testing.T) {
 			},
 		}
 
-		// Create new user & verify ID and timestamps are set.
+		// Create new graph & verify ID and timestamps are set.
 		if err := gs.CreateGraph(context.Background(), g); err != nil {
 			t.Fatal(err)
 		}
@@ -90,10 +95,8 @@ func TestGraphService_CreateGraph(t *testing.T) {
 	t.Run("ErrUIDRequired", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
+		gs := MustGraphService(t, db)
+
 		if err := gs.CreateGraph(context.Background(), &api.Graph{}); err == nil {
 			t.Fatal("expected error")
 		}
@@ -104,10 +107,8 @@ func TestGraphService_FindGraph(t *testing.T) {
 	t.Run("ErrNotFound", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
+		gs := MustGraphService(t, db)
+
 		if _, err := gs.FindGraphByUID(context.Background(), "garbage"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("unexpected error: %#v", err)
 		}
@@ -118,10 +119,7 @@ func TestGraphService_FindGraphs(t *testing.T) {
 	t.Run("UID", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
+		gs := MustGraphService(t, db)
 
 		ctx := context.Background()
 		MustCreateGraph(ctx, t, db, &api.Graph{UID: "foo", Label: StringPtr("lfoo")})
@@ -146,14 +144,11 @@ func TestGraphService_FindGraphs(t *testing.T) {
 	})
 }
 
-func TestGraphService_UpdateUser(t *testing.T) {
+func TestGraphService_UpdateGraph(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
+		gs := MustGraphService(t, db)
 
 		ctx := context.Background()
 		attrs := map[string]interface{}{
@@ -201,27 +196,20 @@ func TestGraphService_UpdateUser(t *testing.T) {
 	t.Run("NonExistent", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
+		gs := MustGraphService(t, db)
 
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = gs.UpdateGraph(context.Background(), "foo", api.GraphUpdate{Label: StringPtr("foo")})
+		_, err := gs.UpdateGraph(context.Background(), "foo", api.GraphUpdate{Label: StringPtr("foo")})
 		if err == nil {
 			t.Fatal("expeected error")
 		}
 	})
 }
 
-func TestUserService_DeleteUser(t *testing.T) {
+func TestGraphService_DeleteGraph(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		db := MustOpenDB(t)
 		defer MustCloseDB(t, db)
-		gs, err := NewGraphService(db)
-		if err != nil {
-			t.Fatal(err)
-		}
+		gs := MustGraphService(t, db)
 
 		ctx := context.Background()
 		MustCreateGraph(ctx, t, db, &api.Graph{UID: "foo", Label: StringPtr("lfoo")})

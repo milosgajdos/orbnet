@@ -43,7 +43,7 @@ func (ns *NodeService) FindNodeByID(ctx context.Context, uid string, id int64) (
 	return &api.Node{
 		ID:     node.ID(),
 		UID:    node.UID(),
-		Label:  node.Label(),
+		Label:  StringPtr(node.Label()),
 		Attrs:  node.Attrs(),
 		DegOut: node.DegOut,
 		DegIn:  node.DegIn,
@@ -65,7 +65,7 @@ func (ns *NodeService) FindNodeByUID(ctx context.Context, guid, nuid string) (*a
 	return &api.Node{
 		ID:     node.ID(),
 		UID:    node.UID(),
-		Label:  node.Label(),
+		Label:  StringPtr(node.Label()),
 		Attrs:  node.Attrs(),
 		DegOut: node.DegOut,
 		DegIn:  node.DegIn,
@@ -92,7 +92,7 @@ func (ns *NodeService) FindNodes(ctx context.Context, uid string, filter api.Nod
 		nodes[i] = &api.Node{
 			ID:     n.ID(),
 			UID:    n.UID(),
-			Label:  n.Label(),
+			Label:  StringPtr(n.Label()),
 			Attrs:  n.Attrs(),
 			DegOut: n.DegOut,
 			DegIn:  n.DegIn,
@@ -117,7 +117,7 @@ func (ns *NodeService) UpdateNode(ctx context.Context, uid string, id int64, upd
 	return &api.Node{
 		ID:     node.ID(),
 		UID:    node.UID(),
-		Label:  node.Label(),
+		Label:  StringPtr(node.Label()),
 		Attrs:  node.Attrs(),
 		DegOut: node.DegOut,
 		DegIn:  node.DegIn,

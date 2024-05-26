@@ -29,8 +29,8 @@ func (t *Tx) CreateNode(ctx context.Context, uid string, n *api.Node) error {
 
 	var opts []memory.Option
 
-	if n.Label != "" {
-		opts = append(opts, memory.WithLabel(n.Label))
+	if *n.Label != "" {
+		opts = append(opts, memory.WithLabel(*n.Label))
 	}
 
 	if n.Attrs != nil {
@@ -47,7 +47,7 @@ func (t *Tx) CreateNode(ctx context.Context, uid string, n *api.Node) error {
 
 	n.ID = node.ID()
 	n.UID = node.UID()
-	n.Label = node.Label()
+	n.Label = StringPtr(node.Label())
 	n.Attrs = node.Attrs()
 	n.DegIn = 0
 	n.DegOut = 0

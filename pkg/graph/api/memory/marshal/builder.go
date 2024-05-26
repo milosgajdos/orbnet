@@ -38,8 +38,8 @@ func (b *Builder) addNodes(_ context.Context, g graph.Adder, nodes []api.Node) e
 			opts = append(opts, memory.WithUID(uid))
 		}
 
-		if label := node.Label; label != "" {
-			opts = append(opts, memory.WithLabel(label))
+		if label := node.Label; *label != "" {
+			opts = append(opts, memory.WithLabel(*label))
 		}
 
 		if attrs := node.Attrs; attrs != nil {

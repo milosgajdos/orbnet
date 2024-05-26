@@ -29,3 +29,7 @@ func parseNodeID(id string) (int64, error) {
 	}
 	return nodeID, nil
 }
+
+func StringPtr(s string) *string {
+	return &s
+}

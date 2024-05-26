@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS graphs (
 
 -- Create nodes table with a foreign key to graphs
 CREATE TABLE IF NOT EXISTS nodes (
-    uid TEXT PRIMARY KEY NOT NULL CHECK(uid <> ''),
-    id INTEGER UNIQUE NOT NULL, -- for backwards compat with gonum.Graph
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid TEXT UNIQUE NOT NULL CHECK(uid <> ''),
     graph TEXT NOT NULL,
     label TEXT,
     attrs TEXT,
@@ -38,9 +38,9 @@ CREATE TABLE IF NOT EXISTS edges (
 
 -- Indexes for efficient querying
 CREATE INDEX IF NOT EXISTS idx_graphs_label ON graphs (label);
-CREATE INDEX IF NOT EXISTS idx_nodes_id ON nodes (id);
 CREATE INDEX IF NOT EXISTS idx_nodes_label ON nodes (label);
 CREATE INDEX IF NOT EXISTS idx_nodes_graph_uid ON nodes (graph, uid);
+CREATE INDEX IF NOT EXISTS idx_nodes_graph_id ON nodes (graph, id);
 CREATE INDEX IF NOT EXISTS idx_edges_source ON edges (source);
 CREATE INDEX IF NOT EXISTS idx_edges_target ON edges (target);
 CREATE INDEX IF NOT EXISTS idx_edges_label ON edges (label);
