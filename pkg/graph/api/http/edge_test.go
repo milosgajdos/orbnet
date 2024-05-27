@@ -301,8 +301,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "a877d937-673d-4b43-bb5c-8f9387e43298",
+			Target: "3ba4972d-c780-4308-9ca8-fe466b60da20",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -357,8 +357,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "a877d937-673d-4b43-bb5c-8f9387e43298",
+			Target: "3ba4972d-c780-4308-9ca8-fe466b60da20",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -368,8 +368,8 @@ func TestCreateEdge(t *testing.T) {
 			t.Fatalf("failed to serialise req body: %v", err)
 		}
 
-		uid := "dsdsdsffsfs"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges", uid)
+		guid := "sdfdfdfd"
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges", guid)
 		req := httptest.NewRequest("POST", urlPath, bytes.NewReader(testBody))
 		req.Header.Set("Content-Type", "application/json")
 
@@ -395,8 +395,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "foo",
+			Target: "bar",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -438,8 +438,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "foo",
+			Target: "bar",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -595,8 +595,9 @@ func TestUpdateEdgeBetween(t *testing.T) {
 			t.Fatalf("failed to serialise req body: %v", err)
 		}
 
-		uid := "cc099040-9dab-4f3d-848e-3046912aa281"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		guid := "cc099040-9dab-4f3d-848e-3046912aa281"
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s",
+			guid, "a877d937-673d-4b43-bb5c-8f9387e43298", "3ba4972d-c780-4308-9ca8-fe466b60da20")
 		req := httptest.NewRequest("PATCH", urlPath, bytes.NewReader(testBody))
 		req.Header.Set("Content-Type", "application/json")
 
@@ -717,8 +718,9 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		db := MustOpenDB(t, testDir)
 		s.EdgeService = MustEdgeService(t, db)
 
-		uid := "cc099040-9dab-4f3d-848e-3046912aa281"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		guid := "cc099040-9dab-4f3d-848e-3046912aa281"
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s",
+			guid, "a877d937-673d-4b43-bb5c-8f9387e43298", "3ba4972d-c780-4308-9ca8-fe466b60da20")
 		req := httptest.NewRequest("DELETE", urlPath, nil)
 
 		resp, err := s.app.Test(req)
@@ -743,8 +745,8 @@ func TestDeleteEdgeBetween(t *testing.T) {
 			target string
 		}{
 			{"sdlfkjsdflkdjf", "0", "1"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "1.3", "1"},
-			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "0", "-1"},
+			{"cc099040-9dab-4f3d-848e-3046912aa281", "", "1"},
+			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "0", ""},
 		}
 
 		for _, tc := range testCases {
@@ -769,7 +771,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		s.EdgeService = MustEdgeService(t, db)
 
 		uid := "97153afd-c434-4ca0-a35b-7467fcd08df1"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s", uid, "foo", "bar")
 		req := httptest.NewRequest("DELETE", urlPath, nil)
 
 		resp, err := s.app.Test(req)
@@ -794,7 +796,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		}
 
 		uid := "97153afd-c434-4ca0-a35b-7467fcd08df1"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s", uid, "foo", "bar")
 		req := httptest.NewRequest("DELETE", urlPath, nil)
 
 		resp, err := s.app.Test(req)

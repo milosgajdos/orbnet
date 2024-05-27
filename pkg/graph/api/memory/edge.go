@@ -2,8 +2,10 @@ package memory
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
+	"github.com/milosgajdos/orbnet/pkg/graph/memory"
 )
 
 // EdgeService lets you manage graph edges.
@@ -40,10 +42,20 @@ func (es *EdgeService) FindEdgeByUID(ctx context.Context, guid, euid string) (*a
 		return nil, err
 	}
 
+	src, ok := edge.From().(*memory.Node)
+	if !ok {
+		return nil, fmt.Errorf("failed to unpack source node for edge: %s", edge.UID())
+	}
+
+	target, ok := edge.To().(*memory.Node)
+	if !ok {
+		return nil, fmt.Errorf("failed to unpack target node for edge: %s", edge.UID())
+	}
+
 	return &api.Edge{
 		UID:    edge.UID(),
-		Source: edge.From().ID(),
-		Target: edge.To().ID(),
+		Source: src.UID(),
+		Target: target.UID(),
 		Weight: edge.Weight(),
 		Label:  edge.Label(),
 		Attrs:  edge.Attrs(),
@@ -78,7 +90,7 @@ func (es *EdgeService) FindEdges(ctx context.Context, guid string, filter api.Ed
 }
 
 // UpdateEdgeBetween updates an edge between two nodes.
-func (es *EdgeService) UpdateEdgeBetween(ctx context.Context, guid string, source, target int64, update api.EdgeUpdate) (*api.Edge, error) {
+func (es *EdgeService) UpdateEdgeBetween(ctx context.Context, guid string, source, target string, update api.EdgeUpdate) (*api.Edge, error) {
 	tx, err := es.db.BeginTx(ctx)
 	if err != nil {
 		return nil, err
@@ -91,8 +103,8 @@ func (es *EdgeService) UpdateEdgeBetween(ctx context.Context, guid string, sourc
 
 	return &api.Edge{
 		UID:    edge.UID(),
-		Source: edge.From().ID(),
-		Target: edge.To().ID(),
+		Source: source,
+		Target: target,
 		Weight: edge.Weight(),
 		Label:  edge.Label(),
 		Attrs:  edge.Attrs(),
@@ -109,7 +121,7 @@ func (es *EdgeService) DeleteEdge(ctx context.Context, guid, euid string) error 
 }
 
 // DeleteEdgeBetween permanently deletes all edges between source and target nodes.
-func (es *EdgeService) DeleteEdgeBetween(ctx context.Context, guid string, source, target int64) error {
+func (es *EdgeService) DeleteEdgeBetween(ctx context.Context, guid string, source, target string) error {
 	tx, err := es.db.BeginTx(ctx)
 	if err != nil {
 		return err

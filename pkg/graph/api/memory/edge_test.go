@@ -67,8 +67,8 @@ func TestCreateEdge(t *testing.T) {
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
 		e := &api.Edge{
-			Source: n.ID(),
-			Target: n2.ID(),
+			Source: n.UID(),
+			Target: n2.UID(),
 			Label:  "testEdge",
 			Attrs:  map[string]interface{}{"foo": 1},
 		}
@@ -114,8 +114,8 @@ func TestFindEdgeByUID(t *testing.T) {
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
 		e := &api.Edge{
-			Source: n.ID(),
-			Target: n2.ID(),
+			Source: n.UID(),
+			Target: n2.UID(),
 			Label:  "testEdge",
 			Attrs:  map[string]interface{}{"foo": 1},
 		}
@@ -166,8 +166,8 @@ func TestUpdateEdgeBetween(t *testing.T) {
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
 		e := &api.Edge{
-			Source: n.ID(),
-			Target: n2.ID(),
+			Source: n.UID(),
+			Target: n2.UID(),
 			Label:  "testEdge",
 			Attrs:  map[string]interface{}{"foo": 1},
 		}
@@ -218,8 +218,8 @@ func TestUpdateEdgeBetween(t *testing.T) {
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
 		e := &api.Edge{
-			Source: n.ID(),
-			Target: n2.ID(),
+			Source: n.UID(),
+			Target: n2.UID(),
 			Label:  "testEdge",
 			Attrs:  map[string]interface{}{"foo": 1},
 		}
@@ -228,11 +228,11 @@ func TestUpdateEdgeBetween(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, n.ID(), -200, api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
+		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, n.UID(), "sdfsdfd", api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
 		}
 
-		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, -100, n.ID(), api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
+		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, "sdfd", n.UID(), api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
 		}
 	})
@@ -241,7 +241,7 @@ func TestUpdateEdgeBetween(t *testing.T) {
 		testGraphUID := "randUID"
 		es := MustEdgeServiceInGraph(t, MemoryDSN, testGraphUID)
 
-		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, 1, 2, api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
+		if _, err := es.UpdateEdgeBetween(context.TODO(), testGraphUID, "foo", "bar", api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
 		}
 	})
@@ -260,8 +260,8 @@ func TestDeleteEdge(t *testing.T) {
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
 		e := &api.Edge{
-			Source: n.ID(),
-			Target: n2.ID(),
+			Source: n.UID(),
+			Target: n2.UID(),
 			Label:  "testEdge",
 			Attrs:  map[string]interface{}{"foo": 1},
 		}
@@ -298,8 +298,8 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		n2 := MustAddNodeEdgeService(t, es, testGraphUID)
 
 		e := &api.Edge{
-			Source: n.ID(),
-			Target: n2.ID(),
+			Source: n.UID(),
+			Target: n2.UID(),
 			Label:  "testEdge",
 			Attrs:  map[string]interface{}{"foo": 1},
 		}
@@ -317,7 +317,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		testGraphUID := "randUID"
 		es := MustEdgeService(t, MemoryDSN)
 
-		if err := es.DeleteEdgeBetween(context.TODO(), testGraphUID, 1, 2); api.ErrorCode(err) != api.ENOTFOUND {
+		if err := es.DeleteEdgeBetween(context.TODO(), testGraphUID, "foo", "bar"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
 		}
 	})

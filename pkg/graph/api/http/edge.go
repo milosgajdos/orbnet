@@ -204,17 +204,17 @@ func (s *Server) UpdateEdgeBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	source, err := parseNodeID(c.Query("source"))
-	if err != nil {
+	source := c.Query("source")
+	if len(source) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
+			Error: "empty source node",
 		})
 	}
 
-	target, err := parseNodeID(c.Query("target"))
-	if err != nil {
+	target := c.Query("target")
+	if len(target) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
+			Error: "empty target node",
 		})
 	}
 
@@ -304,17 +304,17 @@ func (s *Server) DeleteEdgeBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	source, err := parseNodeID(c.Query("source"))
-	if err != nil {
+	source := c.Query("source")
+	if len(source) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
+			Error: "empty source node",
 		})
 	}
 
-	target, err := parseNodeID(c.Query("target"))
-	if err != nil {
+	target := c.Query("target")
+	if len(target) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
+			Error: "empty target node",
 		})
 	}
 

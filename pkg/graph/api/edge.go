@@ -6,13 +6,13 @@ import "context"
 type Edge struct {
 	// UID is edge UUID.
 	UID string `json:"uid,omitempty"`
-	// Source is an ID of the edge source node.
-	Source int64 `json:"source"`
-	// Target is an ID of the edge target node.
-	Target int64 `json:"target"`
+	// Source is an UID of the edge source node.
+	Source string `json:"source"`
+	// Target is an UID of the edge target node.
+	Target string `json:"target"`
 	// Weight is the edge weight.
 	Weight float64 `json:"weight"`
-	// Label is edge label
+	// Label is the edge label
 	Label string `json:"label"`
 	// Attrs are edge attributes
 	Attrs map[string]interface{} `json:"attributes,omitempty"`
@@ -29,18 +29,20 @@ type EdgeService interface {
 	// the number of returned edges if the Limit field is set.
 	FindEdges(ctx context.Context, uid string, filter EdgeFilter) ([]*Edge, int, error)
 	// UpdateEdgeBetween updates an edge between two nodes.
-	UpdateEdgeBetween(ctx context.Context, uid string, source, target int64, update EdgeUpdate) (*Edge, error)
+	UpdateEdgeBetween(ctx context.Context, uid string, source, target string, update EdgeUpdate) (*Edge, error)
 	// DeleteEdge permanently removes an edge by UID.
 	DeleteEdge(ctx context.Context, guid, euid string) error
 	// DeleteEdgeBetween permanently deletes all edges between two nodes.
-	DeleteEdgeBetween(ctx context.Context, uid string, source, target int64) error
+	DeleteEdgeBetween(ctx context.Context, uid string, source, target string) error
 }
 
 // EdgeFilter represents a filter used by FindEdges().
 type EdgeFilter struct {
 	// Filtering fields.
-	Source *int64  `json:"source"`
-	Target *int64  `json:"target"`
+	// Source filters edges starting in Source UID.
+	Source *string `json:"source"`
+	// Target filters edges ending in Target UID.
+	Target *string `json:"target"`
 	Label  *string `json:"label"`
 	// Restrict to subset of range.
 	Offset int `json:"offset"`

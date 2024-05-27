@@ -66,14 +66,16 @@ func (b *Builder) addEdges(_ context.Context, g graph.Adder, edges []api.Edge) e
 	defer b.mu.Unlock()
 
 	for _, edge := range edges {
-		from := g.Node(edge.Source)
+		fromID := b.nodes[edge.Source].ID()
+		from := g.Node(fromID)
 		if from == nil {
-			return graph.Errorf(graph.EINTERNAL, "edge adder: could not find source node: %d", edge.Source)
+			return graph.Errorf(graph.EINTERNAL, "edge adder: could not find source node: %s", edge.Source)
 		}
 
-		to := g.Node(edge.Target)
+		toID := b.nodes[edge.Target].ID()
+		to := g.Node(toID)
 		if to == nil {
-			return graph.Errorf(graph.EINTERNAL, "edge adder: could not find target node: %d", edge.Target)
+			return graph.Errorf(graph.EINTERNAL, "edge adder: could not find target node: %s", edge.Target)
 		}
 
 		// dont create a new edge if an edge already exists

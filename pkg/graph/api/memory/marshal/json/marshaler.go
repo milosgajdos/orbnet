@@ -71,8 +71,8 @@ func (m *Marshaler) Marshal(g graph.Graph) ([]byte, error) {
 
 		ag.Edges[i] = api.Edge{
 			UID:    e.UID(),
-			Source: e.From().ID(),
-			Target: e.To().ID(),
+			Source: e.From().(graph.Node).UID(),
+			Target: e.To().(graph.Node).UID(),
 			Weight: e.Weight(),
 			Label:  e.Label(),
 			Attrs:  e.Attrs(),
