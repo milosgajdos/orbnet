@@ -118,27 +118,6 @@ func TestGraphByUID(t *testing.T) {
 		}
 	})
 
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		gs := MustGraphService(t, db)
-		s.GraphService = gs
-
-		uid := "dflksdjfdlksf"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s", uid)
-		req := httptest.NewRequest("GET", urlPath, nil)
-
-		resp, err := s.app.Test(req)
-		if err != nil {
-			t.Fatalf("failed to get response: %v", err)
-		}
-		defer resp.Body.Close()
-
-		if code := resp.StatusCode; code != http.StatusBadRequest {
-			t.Fatalf("expected status code: %d, got: %d", http.StatusBadRequest, code)
-		}
-	})
-
 	t.Run("404", func(t *testing.T) {
 		s := MustServer(t)
 		db := MustOpenDB(t, testDir)
@@ -401,10 +380,16 @@ func TestUpdateGraph(t *testing.T) {
 		gs := MustGraphService(t, db)
 		s.GraphService = gs
 
-		// unparsable UID should 400
+		update := "foobar"
+
+		testBody, err := json.Marshal(update)
+		if err != nil {
+			t.Fatalf("failed to serialise req body: %v", err)
+		}
+
 		uid := "sdlfkjsdflkdjf"
 		urlPath := fmt.Sprintf("/api/v1/graphs/%s", uid)
-		req := httptest.NewRequest("PATCH", urlPath, nil)
+		req := httptest.NewRequest("PATCH", urlPath, bytes.NewReader(testBody))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := s.app.Test(req)
@@ -475,27 +460,6 @@ func TestDeleteGraph(t *testing.T) {
 
 		if code := resp.StatusCode; code != http.StatusNoContent {
 			t.Fatalf("expected status code: %d, got: %d", http.StatusNoContent, code)
-		}
-	})
-
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		gs := MustGraphService(t, db)
-		s.GraphService = gs
-
-		uid := "sdlfkjsdflkdjf"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s", uid)
-		req := httptest.NewRequest("DELETE", urlPath, nil)
-
-		resp, err := s.app.Test(req)
-		if err != nil {
-			t.Fatalf("failed to get response: %v", err)
-		}
-		defer resp.Body.Close()
-
-		if code := resp.StatusCode; code != http.StatusBadRequest {
-			t.Fatalf("expected status code: %d, got: %d", http.StatusBadRequest, code)
 		}
 	})
 

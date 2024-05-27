@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
 )
 
@@ -41,13 +40,7 @@ func (s *Server) registerEdgeRoutes(r fiber.Router) {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{guid}/edges [get]
 func (s *Server) GetAllEdges(c *fiber.Ctx) error {
-	// Grab Graph UID from request.
-	uid, err := uuid.Parse(c.Params("guid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
+	graphUID := c.Params("guid")
 
 	var filter api.EdgeFilter
 	filter.Limit = DefaultLimit
@@ -69,7 +62,7 @@ func (s *Server) GetAllEdges(c *fiber.Ctx) error {
 		*filter.Label = c.Query("label")
 	}
 
-	edges, n, err := s.EdgeService.FindEdges(context.TODO(), uid.String(), filter)
+	edges, n, err := s.EdgeService.FindEdges(context.TODO(), graphUID, filter)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -96,27 +89,14 @@ func (s *Server) GetAllEdges(c *fiber.Ctx) error {
 // @Param guid path string true "Graph UID"
 // @Param uid path string true "Edge UID"
 // @Success 200 {object} api.Edge
-// @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{guid}/edges/{uid} [get]
 func (s *Server) GetEdgeByUID(c *fiber.Ctx) error {
-	// Grab Graph UID from request.
-	guid, err := uuid.Parse(c.Params("guid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
+	graphUID := c.Params("guid")
+	nodeUID := c.Params("uid")
 
-	uid, err := uuid.Parse(c.Params("uid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
-
-	edge, err := s.EdgeService.FindEdgeByUID(context.TODO(), guid.String(), uid.String())
+	edge, err := s.EdgeService.FindEdgeByUID(context.TODO(), graphUID, nodeUID)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -145,12 +125,7 @@ func (s *Server) GetEdgeByUID(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{guid}/edges [post]
 func (s *Server) CreateEdge(c *fiber.Ctx) error {
-	guid, err := uuid.Parse(c.Params("guid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
+	graphUID := c.Params("guid")
 
 	edge := new(api.Edge)
 	if err := c.BodyParser(edge); err != nil {
@@ -165,7 +140,7 @@ func (s *Server) CreateEdge(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := s.EdgeService.CreateEdge(context.TODO(), guid.String(), edge); err != nil {
+	if err := s.EdgeService.CreateEdge(context.TODO(), graphUID, edge); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
@@ -196,13 +171,7 @@ func (s *Server) CreateEdge(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{guid}/edges [patch]
 func (s *Server) UpdateEdgeBetween(c *fiber.Ctx) error {
-	// Grab Graph UID from request.
-	uid, err := uuid.Parse(c.Params("guid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
+	graphUID := c.Params("guid")
 
 	source := c.Query("source")
 	if len(source) == 0 {
@@ -225,7 +194,7 @@ func (s *Server) UpdateEdgeBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	edge, err := s.EdgeService.UpdateEdgeBetween(context.TODO(), uid.String(), source, target, *update)
+	edge, err := s.EdgeService.UpdateEdgeBetween(context.TODO(), graphUID, source, target, *update)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -249,26 +218,14 @@ func (s *Server) UpdateEdgeBetween(c *fiber.Ctx) error {
 // @Param guid path string true "Graph UID"
 // @Param uid path string true "Edge UID"
 // @Success 204 {string} status "Edge was deleted successfully"
-// @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{guid}/edges/{uid} [delete]
 func (s *Server) DeleteEdge(c *fiber.Ctx) error {
-	guid, err := uuid.Parse(c.Params("guid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
+	graphUID := c.Params("guid")
+	edgeUID := c.Params("uid")
 
-	uid, err := uuid.Parse(c.Params("uid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
-
-	if err := s.EdgeService.DeleteEdge(context.TODO(), guid.String(), uid.String()); err != nil {
+	if err := s.EdgeService.DeleteEdge(context.TODO(), graphUID, edgeUID); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
@@ -297,12 +254,7 @@ func (s *Server) DeleteEdge(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{guid}/edges [delete]
 func (s *Server) DeleteEdgeBetween(c *fiber.Ctx) error {
-	guid, err := uuid.Parse(c.Params("guid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
+	graphUID := c.Params("guid")
 
 	source := c.Query("source")
 	if len(source) == 0 {
@@ -318,7 +270,7 @@ func (s *Server) DeleteEdgeBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := s.EdgeService.DeleteEdgeBetween(context.TODO(), guid.String(), source, target); err != nil {
+	if err := s.EdgeService.DeleteEdgeBetween(context.TODO(), graphUID, source, target); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),

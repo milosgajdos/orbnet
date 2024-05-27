@@ -96,26 +96,6 @@ func TestGetNodes(t *testing.T) {
 		}
 	})
 
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		s.NodeService = MustNodeService(t, db)
-
-		uid := "dflksdjfdlksf"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/nodes", uid)
-		req := httptest.NewRequest("GET", urlPath, nil)
-
-		resp, err := s.app.Test(req)
-		if err != nil {
-			t.Fatalf("failed to get response: %v", err)
-		}
-		defer resp.Body.Close()
-
-		if code := resp.StatusCode; code != http.StatusBadRequest {
-			t.Fatalf("expected status code: %d, got: %d", http.StatusBadRequest, code)
-		}
-	})
-
 	t.Run("404", func(t *testing.T) {
 		s := MustServer(t)
 		db := MustOpenDB(t, testDir)
@@ -195,37 +175,6 @@ func TestGetNodeByUID(t *testing.T) {
 
 		if n.UID != nuid {
 			t.Fatalf("expected graph uid: %s, got: %s", nuid, n.UID)
-		}
-	})
-
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		s.NodeService = MustNodeService(t, db)
-
-		testCases := []struct {
-			guid string
-			nuid string
-		}{
-			{"dflksdjfdlksf", "014e5c91-5d5e-4d34-8284-4354aa9f62cd"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "randuid"},
-		}
-
-		for _, tc := range testCases {
-			guid := tc.guid
-			nuid := tc.nuid
-			urlPath := fmt.Sprintf("/api/v1/graphs/%s/nodes/uid/%s", guid, nuid)
-			req := httptest.NewRequest("GET", urlPath, nil)
-
-			resp, err := s.app.Test(req)
-			if err != nil {
-				t.Fatalf("failed to get response: %v", err)
-			}
-			defer resp.Body.Close()
-
-			if code := resp.StatusCode; code != http.StatusBadRequest {
-				t.Fatalf(" expected status code: %d, got: %d, for uid: %q", http.StatusBadRequest, code, tc.nuid)
-			}
 		}
 	})
 
@@ -334,7 +283,6 @@ func TestGetNodeByID(t *testing.T) {
 			guid string
 			nuid string
 		}{
-			{"sdlfkjsdflkdjf", "0"},
 			{"cc099040-9dab-4f3d-848e-3046912aa281", "1.3"},
 			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "-10"},
 		}
@@ -475,15 +423,7 @@ func TestCreateNode(t *testing.T) {
 		db := MustOpenDB(t, testDir)
 		s.NodeService = MustNodeService(t, db)
 
-		label := "foolabel"
-		attrs := map[string]interface{}{
-			"one": 1,
-			"two": "twostring",
-		}
-		apiNode := &api.Node{
-			Label: StringPtr(label),
-			Attrs: attrs,
-		}
+		apiNode := "foo"
 
 		testBody, err := json.Marshal(apiNode)
 		if err != nil {
@@ -640,7 +580,6 @@ func TestUpdateNode(t *testing.T) {
 			guid string
 			id   string
 		}{
-			{"sdlfkjsdflkdjf", "0"},
 			{"cc099040-9dab-4f3d-848e-3046912aa281", "1.3"},
 			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "-10"},
 		}
@@ -764,7 +703,6 @@ func TestDeleteNodeByID(t *testing.T) {
 			guid string
 			id   string
 		}{
-			{"sdlfkjsdflkdjf", "0"},
 			{"cc099040-9dab-4f3d-848e-3046912aa281", "1.3"},
 			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "-10"},
 		}
@@ -851,35 +789,6 @@ func TestDeleteNodeByUID(t *testing.T) {
 
 		if code := resp.StatusCode; code != http.StatusNoContent {
 			t.Fatalf("expected status code: %d, got: %d", http.StatusNoContent, code)
-		}
-	})
-
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		s.NodeService = MustNodeService(t, db)
-
-		testCases := []struct {
-			guid string
-			uid  string
-		}{
-			{"sdlfkjsdflkdjf", "014e5c91-5d5e-4d34-8284-4354aa9f62cd"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "dfsdfdfdf"},
-		}
-
-		for _, tc := range testCases {
-			urlPath := fmt.Sprintf("/api/v1/graphs/%s/nodes/uid/%s", tc.guid, tc.uid)
-			req := httptest.NewRequest("DELETE", urlPath, nil)
-
-			resp, err := s.app.Test(req)
-			if err != nil {
-				t.Fatalf("failed to get response: %v", err)
-			}
-			defer resp.Body.Close()
-
-			if code := resp.StatusCode; code != http.StatusBadRequest {
-				t.Fatalf("expected status code: %d, got: %d", http.StatusBadRequest, code)
-			}
 		}
 	})
 
