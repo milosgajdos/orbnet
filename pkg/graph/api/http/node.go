@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -64,7 +63,7 @@ func (s *Server) GetNodes(c *fiber.Ctx) error {
 		*filter.Label = c.Query("label")
 	}
 
-	nodes, n, err := s.NodeService.FindNodes(context.TODO(), graphUID, filter)
+	nodes, n, err := s.NodeService.FindNodes(c.Context(), graphUID, filter)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -98,7 +97,7 @@ func (s *Server) GetNodeByUID(c *fiber.Ctx) error {
 	graphUID := c.Params("guid")
 	nodeUID := c.Params("uid")
 
-	node, err := s.NodeService.FindNodeByUID(context.TODO(), graphUID, nodeUID)
+	node, err := s.NodeService.FindNodeByUID(c.Context(), graphUID, nodeUID)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -142,7 +141,7 @@ func (s *Server) GetNodeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	node, err := s.NodeService.FindNodeByID(context.TODO(), graphUID, id)
+	node, err := s.NodeService.FindNodeByID(c.Context(), graphUID, id)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -181,7 +180,7 @@ func (s *Server) CreateNode(c *fiber.Ctx) error {
 	}
 
 	// TODO(milosgajdos): validate node here
-	if err := s.NodeService.CreateNode(context.TODO(), graphUID, node); err != nil {
+	if err := s.NodeService.CreateNode(c.Context(), graphUID, node); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
@@ -235,7 +234,7 @@ func (s *Server) UpdateNode(c *fiber.Ctx) error {
 		})
 	}
 
-	node, err := s.NodeService.UpdateNode(context.TODO(), graphUID, id, *update)
+	node, err := s.NodeService.UpdateNode(c.Context(), graphUID, id, *update)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -279,7 +278,7 @@ func (s *Server) DeleteNodeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := s.NodeService.DeleteNodeByID(context.TODO(), graphUID, id); err != nil {
+	if err := s.NodeService.DeleteNodeByID(c.Context(), graphUID, id); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
@@ -309,7 +308,7 @@ func (s *Server) DeleteNodeByUID(c *fiber.Ctx) error {
 	graphUID := c.Params("guid")
 	nodeUID := c.Params("uid")
 
-	if err := s.NodeService.DeleteNodeByUID(context.TODO(), graphUID, nodeUID); err != nil {
+	if err := s.NodeService.DeleteNodeByUID(c.Context(), graphUID, nodeUID); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),

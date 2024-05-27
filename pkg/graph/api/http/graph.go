@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -50,7 +49,7 @@ func (s *Server) GetAllGraphs(c *fiber.Ctx) error {
 		filter.Limit = limit
 	}
 
-	graphs, n, err := s.GraphService.FindGraphs(context.TODO(), filter)
+	graphs, n, err := s.GraphService.FindGraphs(c.Context(), filter)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error: err.Error(),
@@ -74,7 +73,7 @@ func (s *Server) GetAllGraphs(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{uid} [get]
 func (s *Server) GetGraphByUID(c *fiber.Ctx) error {
-	graph, err := s.GraphService.FindGraphByUID(context.TODO(), c.Params("uid"))
+	graph, err := s.GraphService.FindGraphByUID(c.Context(), c.Params("uid"))
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -110,7 +109,7 @@ func (s *Server) CreateGraph(c *fiber.Ctx) error {
 	}
 
 	// TODO(milosgajdos): validate graph here
-	if err := s.GraphService.CreateGraph(context.TODO(), graph); err != nil {
+	if err := s.GraphService.CreateGraph(c.Context(), graph); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error: err.Error(),
 		})
@@ -142,7 +141,7 @@ func (s *Server) UpdateGraph(c *fiber.Ctx) error {
 		})
 	}
 
-	graph, err := s.GraphService.UpdateGraph(context.TODO(), c.Params("uid"), *update)
+	graph, err := s.GraphService.UpdateGraph(c.Context(), c.Params("uid"), *update)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -169,7 +168,7 @@ func (s *Server) UpdateGraph(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{uid} [delete]
 func (s *Server) DeleteGraph(c *fiber.Ctx) error {
-	if err := s.GraphService.DeleteGraph(context.TODO(), c.Params("uid")); err != nil {
+	if err := s.GraphService.DeleteGraph(c.Context(), c.Params("uid")); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error: err.Error(),
 		})

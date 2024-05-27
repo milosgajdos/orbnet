@@ -371,12 +371,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/api.Edge"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -421,12 +415,6 @@ const docTemplate = `{
                         "description": "Edge was deleted successfully",
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
                         }
                     },
                     "404": {
@@ -486,12 +474,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/http.NodesResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
                         }
                     },
                     "404": {
@@ -592,12 +574,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/api.Node"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -642,12 +618,6 @@ const docTemplate = `{
                         "description": "Node was deleted successfully",
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
                         }
                     },
                     "404": {
@@ -861,12 +831,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/api.Graph"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/http.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -906,8 +870,8 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/http.ErrorResponse"
                         }
@@ -989,16 +953,16 @@ const docTemplate = `{
                     "additionalProperties": true
                 },
                 "label": {
-                    "description": "Label is edge label",
+                    "description": "Label is the edge label",
                     "type": "string"
                 },
                 "source": {
-                    "description": "Source is an ID of the edge source node.",
-                    "type": "integer"
+                    "description": "Source is an UID of the edge source node.",
+                    "type": "string"
                 },
                 "target": {
-                    "description": "Target is an ID of the edge target node.",
-                    "type": "integer"
+                    "description": "Target is an UID of the edge target node.",
+                    "type": "string"
                 },
                 "uid": {
                     "description": "UID is edge UUID.",
@@ -1033,6 +997,10 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "createdAt": {
+                    "description": "Timestamps for graph creation \u0026 last update.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edge is the edge count.",
                     "type": "integer"
@@ -1045,12 +1013,11 @@ const docTemplate = `{
                     "description": "Nodes is the node count.",
                     "type": "integer"
                 },
-                "type": {
-                    "description": "Type is a type of graph.",
-                    "type": "string"
-                },
                 "uid": {
                     "description": "UID is graph UUID.",
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -1075,6 +1042,10 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "createdAt": {
+                    "description": "Timestamps for graph creation \u0026 last update.",
+                    "type": "string"
+                },
                 "deg_in": {
                     "description": "DegIn is the count of incoming edges.",
                     "type": "integer"
@@ -1093,6 +1064,9 @@ const docTemplate = `{
                 },
                 "uid": {
                     "description": "UID is node UUID.",
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

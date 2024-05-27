@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -62,7 +61,7 @@ func (s *Server) GetAllEdges(c *fiber.Ctx) error {
 		*filter.Label = c.Query("label")
 	}
 
-	edges, n, err := s.EdgeService.FindEdges(context.TODO(), graphUID, filter)
+	edges, n, err := s.EdgeService.FindEdges(c.Context(), graphUID, filter)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -96,7 +95,7 @@ func (s *Server) GetEdgeByUID(c *fiber.Ctx) error {
 	graphUID := c.Params("guid")
 	nodeUID := c.Params("uid")
 
-	edge, err := s.EdgeService.FindEdgeByUID(context.TODO(), graphUID, nodeUID)
+	edge, err := s.EdgeService.FindEdgeByUID(c.Context(), graphUID, nodeUID)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -140,7 +139,7 @@ func (s *Server) CreateEdge(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := s.EdgeService.CreateEdge(context.TODO(), graphUID, edge); err != nil {
+	if err := s.EdgeService.CreateEdge(c.Context(), graphUID, edge); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
@@ -194,7 +193,7 @@ func (s *Server) UpdateEdgeBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	edge, err := s.EdgeService.UpdateEdgeBetween(context.TODO(), graphUID, source, target, *update)
+	edge, err := s.EdgeService.UpdateEdgeBetween(c.Context(), graphUID, source, target, *update)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -225,7 +224,7 @@ func (s *Server) DeleteEdge(c *fiber.Ctx) error {
 	graphUID := c.Params("guid")
 	edgeUID := c.Params("uid")
 
-	if err := s.EdgeService.DeleteEdge(context.TODO(), graphUID, edgeUID); err != nil {
+	if err := s.EdgeService.DeleteEdge(c.Context(), graphUID, edgeUID); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
@@ -270,7 +269,7 @@ func (s *Server) DeleteEdgeBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := s.EdgeService.DeleteEdgeBetween(context.TODO(), graphUID, source, target); err != nil {
+	if err := s.EdgeService.DeleteEdgeBetween(c.Context(), graphUID, source, target); err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
 				Error: err.Error(),
