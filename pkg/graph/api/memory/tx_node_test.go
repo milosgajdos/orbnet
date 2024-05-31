@@ -16,7 +16,7 @@ func TestTxCreateNode(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -29,7 +29,7 @@ func TestTxCreateNode(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		n := &api.Node{Label: StringPtr("testNode")}
 
@@ -47,7 +47,7 @@ func TestTxFindNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -70,7 +70,7 @@ func TestTxFindNodeByID(t *testing.T) {
 	t.Run("NotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -94,7 +94,7 @@ func TestTxFindNodeByiUID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -117,7 +117,7 @@ func TestTxFindNodeByiUID(t *testing.T) {
 	t.Run("NotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -207,7 +207,7 @@ func TestTxUpdateNode(t *testing.T) {
 
 	t.Run("GraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if _, err := tx.UpdateNode(ctx, "randomUID", 10, api.NodeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -217,7 +217,7 @@ func TestTxUpdateNode(t *testing.T) {
 	t.Run("NodeNotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -235,7 +235,7 @@ func TestTxUpdateNode(t *testing.T) {
 	t.Run("LabelAttrs", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -276,7 +276,7 @@ func TestTxUpdateNode(t *testing.T) {
 	t.Run("NoUpdate", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -305,7 +305,7 @@ func TestTxDeleteNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -322,7 +322,7 @@ func TestTxDeleteNodeByID(t *testing.T) {
 
 	t.Run("GraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteNodeByID(ctx, "randomUID", 10); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -338,7 +338,7 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -356,7 +356,7 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 	t.Run("NodeNotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		if err := tx.DeleteNodeByUID(ctx, g.UID(), "randomUID"); api.ErrorCode(err) != api.ENOTFOUND {
@@ -366,7 +366,7 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 
 	t.Run("GraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteNodeByUID(ctx, "randomUID", "doesntMatter"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)

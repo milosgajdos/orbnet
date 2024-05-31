@@ -47,7 +47,7 @@ func TestCreateNode(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
@@ -57,7 +57,7 @@ func TestCreateNode(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		n := &api.Node{Label: StringPtr("testNode")}
 
@@ -75,7 +75,7 @@ func TestFindNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		n := &api.Node{Label: StringPtr("testNode")}
 
@@ -96,7 +96,7 @@ func TestFindNodeByID(t *testing.T) {
 	t.Run("NotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		if _, err := ns.FindNodeByID(context.TODO(), testGraphUID, -1000); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -104,7 +104,7 @@ func TestFindNodeByID(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if _, err := ns.FindNodeByID(context.TODO(), "randgraphuid", -1000); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -177,7 +177,7 @@ func TestFindNodes(t *testing.T) {
 	}
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if err := ns.DeleteNodeByID(context.TODO(), "randuid", 300); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -193,7 +193,7 @@ func TestUpdateNode(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
@@ -231,7 +231,7 @@ func TestUpdateNode(t *testing.T) {
 	t.Run("ErrNodeNotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		newLabel := "NewLabel"
 		update := api.NodeUpdate{
@@ -244,7 +244,7 @@ func TestUpdateNode(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if _, err := ns.UpdateNode(context.TODO(), "randuid", 3000, api.NodeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -260,7 +260,7 @@ func TestDeleteNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
@@ -274,7 +274,7 @@ func TestDeleteNodeByID(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if err := ns.DeleteNodeByID(context.TODO(), "randUID", 300); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -289,7 +289,7 @@ func TestDeleteNodeByUID(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
@@ -304,7 +304,7 @@ func TestDeleteNodeByUID(t *testing.T) {
 
 	t.Run("NodeNotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		if err := ns.DeleteNodeByUID(context.TODO(), testGraphUID, "doesntMatter"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -312,7 +312,7 @@ func TestDeleteNodeByUID(t *testing.T) {
 	})
 
 	t.Run("GraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if err := ns.DeleteNodeByUID(context.TODO(), "randUID", "doesntMatter"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))

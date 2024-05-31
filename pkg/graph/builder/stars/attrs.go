@@ -6,7 +6,12 @@ import (
 )
 
 func OwnerAttrs(owner *github.User) (map[string]interface{}, error) {
-	return attrs.Encode(owner)
+	attrs, err := attrs.Encode(owner)
+	if err != nil {
+		return nil, err
+	}
+	attrs["name"] = *owner.Login
+	return attrs, nil
 }
 
 func RepoAttrs(repo *github.Repository, starredAt *github.Timestamp) (map[string]interface{}, error) {

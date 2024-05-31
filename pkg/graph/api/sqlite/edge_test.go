@@ -111,8 +111,10 @@ func TestEdgeService_FindEdges(t *testing.T) {
 		MustCreateNode(ctx, t, db, graphUID, node3)
 
 		// Create edges
-		MustCreateEdge(ctx, t, db, graphUID, &api.Edge{UID: "edge1", Source: node1.UID, Target: node2.UID, Label: "Edge1"})
-		MustCreateEdge(ctx, t, db, graphUID, &api.Edge{UID: "edge2", Source: node1.UID, Target: node3.UID, Label: "Edge2"})
+		edge1 := &api.Edge{UID: "edge1", Source: node1.UID, Target: node2.UID, Label: "Edge1"}
+		edge2 := &api.Edge{UID: "edge2", Source: node1.UID, Target: node3.UID, Label: "Edge2"}
+		MustCreateEdge(ctx, t, db, graphUID, edge1)
+		MustCreateEdge(ctx, t, db, graphUID, edge2)
 
 		source := node1.UID
 		ex, n, err := es.FindEdges(ctx, graphUID, api.EdgeFilter{Source: &source})
@@ -145,8 +147,10 @@ func TestEdgeService_FindEdges(t *testing.T) {
 		MustCreateNode(ctx, t, db, graphUID, node3)
 
 		// Create edges
-		MustCreateEdge(ctx, t, db, graphUID, &api.Edge{UID: "edge1", Source: node1.UID, Target: node2.UID, Label: "Edge1"})
-		MustCreateEdge(ctx, t, db, graphUID, &api.Edge{UID: "edge2", Source: node3.UID, Target: node2.UID, Label: "Edge2"})
+		edge1 := &api.Edge{UID: "edge1", Source: node1.UID, Target: node2.UID, Label: "Edge1"}
+		edge2 := &api.Edge{UID: "edge2", Source: node3.UID, Target: node2.UID, Label: "Edge2"}
+		MustCreateEdge(ctx, t, db, graphUID, edge1)
+		MustCreateEdge(ctx, t, db, graphUID, edge2)
 
 		target := node2.UID
 		ex, n, err := es.FindEdges(ctx, graphUID, api.EdgeFilter{Target: &target})

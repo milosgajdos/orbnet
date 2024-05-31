@@ -20,7 +20,7 @@ func MustOpenDB(tb testing.TB) *DB {
 
 	// Write to an in-memory database by default.
 	// If the -dump flag is set, generate a temp file for the database.
-	dsn := ":memory:"
+	dsn := MemoryDSN
 	if *dump {
 		dir := tb.TempDir()
 		dsn = filepath.Join(dir, "db")

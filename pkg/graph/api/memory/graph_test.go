@@ -32,7 +32,7 @@ func TestCreateGraph(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
 			Attrs: map[string]interface{}{
@@ -51,7 +51,7 @@ func TestCreateGraph(t *testing.T) {
 	})
 
 	t.Run("DuplicateUID", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
@@ -72,7 +72,7 @@ func TestCreateGraph(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
@@ -90,7 +90,7 @@ func TestFindGraphByUID(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
@@ -115,7 +115,7 @@ func TestFindGraphByUID(t *testing.T) {
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		if _, err := gs.FindGraphByUID(context.TODO(), "garbageUID"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -123,7 +123,7 @@ func TestFindGraphByUID(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if _, err := gs.FindGraphByUID(context.TODO(), "foo"); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)
@@ -187,7 +187,7 @@ func TestFindGraphs(t *testing.T) {
 	}
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if _, _, err := gs.FindGraphs(context.TODO(), api.GraphFilter{}); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)
@@ -201,7 +201,7 @@ func TestUpdateGraph(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
@@ -239,7 +239,7 @@ func TestUpdateGraph(t *testing.T) {
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
@@ -264,7 +264,7 @@ func TestUpdateGraph(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if _, err := gs.UpdateGraph(context.TODO(), "garbageUID", api.GraphUpdate{}); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)
@@ -278,7 +278,7 @@ func TestDeleteGraph(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
 			Label: StringPtr("Foo"),
@@ -298,7 +298,7 @@ func TestDeleteGraph(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if err := gs.DeleteGraph(context.TODO(), "foo"); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)

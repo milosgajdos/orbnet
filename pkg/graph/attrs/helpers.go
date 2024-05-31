@@ -71,7 +71,7 @@ func ToString(k string, v interface{}) string {
 		if f, ok := v.(float64); ok {
 			return fmt.Sprintf("%f", f)
 		}
-	case "name", "relation":
+	case "name", "relation", "full_name":
 		if val, ok := v.(string); ok {
 			return val
 		}

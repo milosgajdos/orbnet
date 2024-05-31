@@ -16,7 +16,7 @@ func TestTxCreateEdge(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -37,7 +37,7 @@ func TestTxCreateEdge(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		n := &api.Edge{Label: "testEdge"}
 
@@ -55,7 +55,7 @@ func TestTxFindEdgeByUID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -84,7 +84,7 @@ func TestTxFindEdgeByUID(t *testing.T) {
 	})
 
 	t.Run("GraphNotFound", func(t *testing.T) {
-		tx := MustOpenTx(t, context.TODO(), MemoryDSN)
+		tx := MustOpenTx(t, context.TODO(), DSN)
 
 		if _, err := tx.FindEdgeByUID(context.TODO(), "foo", "bar"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -164,7 +164,7 @@ func TestTxUpdateEdgeBetween(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -220,7 +220,7 @@ func TestTxUpdateEdgeBetween(t *testing.T) {
 	t.Run("EdgeNotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -246,7 +246,7 @@ func TestTxUpdateEdgeBetween(t *testing.T) {
 	t.Run("NoUpdate", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -280,7 +280,7 @@ func TestTxUpdateEdgeBetween(t *testing.T) {
 	})
 
 	t.Run("GraphNotFound", func(t *testing.T) {
-		tx := MustOpenTx(t, context.TODO(), MemoryDSN)
+		tx := MustOpenTx(t, context.TODO(), DSN)
 
 		if _, err := tx.UpdateEdgeBetween(context.TODO(), "foo", "ffs1", "ffs2", api.EdgeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -297,7 +297,7 @@ func TestTxDeleteEdge(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -322,7 +322,7 @@ func TestTxDeleteEdge(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteEdge(ctx, "foo", "bar"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -338,7 +338,7 @@ func TestTxDeleteEdgeBetween(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
@@ -363,7 +363,7 @@ func TestTxDeleteEdgeBetween(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteEdgeBetween(ctx, "foo", "foo1", "bar1"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)

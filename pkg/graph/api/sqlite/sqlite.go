@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	// sqlite blank import
@@ -18,9 +19,11 @@ import (
 
 const (
 	// MemoryDSN is the in-memory data source name.
-	MemoryDSN = ":memory:"
+	MemoryDSN = "sqlite://:memory:"
 	// Migrations is the file path glob for migrations.
-	Migraions = "schema/*.sql"
+	Migrations = "schema/*.sql"
+	// Scehem is required sqlite scheme
+	Scheme = "sqlite"
 )
 
 //go:embed schema/*.sql
@@ -58,15 +61,20 @@ func (db *DB) Open() (err error) {
 		return fmt.Errorf("dsn required")
 	}
 
+	dsn, err := parseDSN(db.DSN)
+	if err != nil {
+		return err
+	}
+
 	// Make the parent directory unless using an in-memory db.
-	if db.DSN != MemoryDSN {
-		if err := os.MkdirAll(filepath.Dir(db.DSN), 0700); err != nil {
+	if dsn != MemoryDSN {
+		if err := os.MkdirAll(filepath.Dir(dsn), 0700); err != nil {
 			return err
 		}
 	}
 
 	// Connect to the database.
-	if db.db, err = sql.Open("sqlite3", db.DSN); err != nil {
+	if db.db, err = sql.Open("sqlite3", dsn); err != nil {
 		return err
 	}
 
@@ -107,7 +115,7 @@ func (db *DB) migrate() error {
 
 	// Read migration files from our embedded file system.
 	// This uses Go 1.16's 'embed' package.
-	names, err := fs.Glob(migrationFS, Migraions)
+	names, err := fs.Glob(migrationFS, Migrations)
 	if err != nil {
 		return err
 	}
@@ -181,6 +189,23 @@ func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
 		Tx: tx,
 		db: db,
 	}, nil
+}
+
+func parseDSN(dsn string) (string, error) {
+	scheme, path, ok := strings.Cut(dsn, "://")
+	if !ok {
+		return "", fmt.Errorf("invalid dsn")
+	}
+
+	if scheme != Scheme {
+		return "", fmt.Errorf("invalid dsn scheme")
+	}
+
+	if path == "" {
+		return "", fmt.Errorf("invalid path")
+	}
+
+	return path, nil
 }
 
 // NullTime represents a helper wrapper for time.Time. It automatically converts

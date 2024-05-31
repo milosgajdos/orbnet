@@ -29,14 +29,19 @@ func NewNode(n graph.Node) *gexf12.Node {
 
 	a := n.Attrs()
 
-	if d := attrs.ToString("date", a["date"]); d != "" {
-		node.Start = d
-	}
-
 	name := n.UID()
 
 	if n := attrs.ToString("name", a["name"]); n != "" {
 		name = n
+	}
+
+	// override name with full_name
+	if n := attrs.ToString("full_name", a["full_name"]); n != "" {
+		name = n
+	}
+
+	if d := attrs.ToString("date", a["date"]); d != "" {
+		node.Start = d
 	}
 
 	att := gexf12.AttValue{

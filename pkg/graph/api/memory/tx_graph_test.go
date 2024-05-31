@@ -15,7 +15,7 @@ func TestTxCreateGraph(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		g := &api.Graph{Label: StringPtr("testGraph"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -25,7 +25,7 @@ func TestTxCreateGraph(t *testing.T) {
 
 	t.Run("ErrAlreadyExists", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -46,7 +46,7 @@ func TestTxFindGraphByUID(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -65,7 +65,7 @@ func TestTxFindGraphByUID(t *testing.T) {
 
 	t.Run("NotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -144,7 +144,7 @@ func TestTxUpdateGraph(t *testing.T) {
 
 	t.Run("NotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -158,7 +158,7 @@ func TestTxUpdateGraph(t *testing.T) {
 
 	t.Run("LabelAttrs", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -195,7 +195,7 @@ func TestTxUpdateGraph(t *testing.T) {
 
 	t.Run("NoUpdate", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -215,7 +215,7 @@ func TestTxDeleteGraph(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		g := &api.Graph{Label: StringPtr("testGraph")}
 		if err := tx.CreateGraph(ctx, g); err != nil {
@@ -229,7 +229,7 @@ func TestTxDeleteGraph(t *testing.T) {
 
 	t.Run("NotExist", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteGraph(ctx, "randomUID"); err != nil {
 			t.Fatal(err)
