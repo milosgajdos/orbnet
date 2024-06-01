@@ -101,7 +101,7 @@ func (db *DB) Open() (err error) {
 
 // migrate sets up migration tracking and executes pending migration files.
 //
-// Migration files are embedded in the sqlite/migration folder and are executed
+// Migration files are embedded in the sqlite/schema folder and are executed
 // in lexigraphical order.
 //
 // Once a migration is run, its name is stored in the 'migrations' table so it
@@ -144,14 +144,17 @@ func (db *DB) migrateFile(name string) error {
 	var n int
 	if err := tx.QueryRow(`SELECT COUNT(*) FROM migrations WHERE name = ?`, name).Scan(&n); err != nil {
 		return err
-	} else if n != 0 {
+	}
+	if n != 0 {
 		return nil // already run migration, skip
 	}
 
 	// Read and execute migration file.
-	if buf, err := fs.ReadFile(migrationFS, name); err != nil {
+	buf, err := fs.ReadFile(migrationFS, name)
+	if err != nil {
 		return err
-	} else if _, err := tx.Exec(string(buf)); err != nil {
+	}
+	if _, err := tx.Exec(string(buf)); err != nil {
 		return err
 	}
 
@@ -217,7 +220,8 @@ func (n *NullTime) Scan(value interface{}) error {
 	if value == nil {
 		*(*time.Time)(n) = time.Time{}
 		return nil
-	} else if value, ok := value.(string); ok {
+	}
+	if value, ok := value.(string); ok {
 		*(*time.Time)(n), _ = time.Parse(time.RFC3339, value)
 		return nil
 	}
@@ -237,9 +241,11 @@ func (n *NullTime) Value() (driver.Value, error) {
 func FormatLimitOffset(limit, offset int) string {
 	if limit > 0 && offset > 0 {
 		return fmt.Sprintf(`LIMIT %d OFFSET %d`, limit, offset)
-	} else if limit > 0 {
+	}
+	if limit > 0 {
 		return fmt.Sprintf(`LIMIT %d`, limit)
-	} else if offset > 0 {
+	}
+	if offset > 0 {
 		return fmt.Sprintf(`OFFSET %d`, offset)
 	}
 	return ""

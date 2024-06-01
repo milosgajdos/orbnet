@@ -9,10 +9,11 @@ import (
 )
 
 // NewFetcher creates a new fetcher.Fetcher and returns it.
-// If indir is empty string, it returns stream.Fetcher.
-func NewFetcher(indir string) (fetcher.Fetcher, error) {
-	if indir != "" {
-		f, err := fs.NewFetcher(indir)
+// If input is empty string, it returns stream.Fetcher.
+// Otherwise it considers input to be a feilsystem path.
+func NewFetcher(input string) (fetcher.Fetcher, error) {
+	if input != "" {
+		f, err := fs.NewFetcher(input)
 		if err != nil {
 			return nil, err
 		}

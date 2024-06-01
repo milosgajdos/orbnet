@@ -98,7 +98,8 @@ func findGraphByUID(ctx context.Context, tx *Tx, uid string) (*api.Graph, error)
 	gx, _, err := findGraphs(ctx, tx, api.GraphFilter{UID: &uid})
 	if err != nil {
 		return nil, err
-	} else if len(gx) == 0 {
+	}
+	if len(gx) == 0 {
 		return nil, &api.Error{Code: api.ENOTFOUND, Message: "Graph not found."}
 	}
 	return gx[0], nil
