@@ -1,6 +1,9 @@
 package api
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // Edge is an edge between two graph nodes.
 type Edge struct {
@@ -16,6 +19,9 @@ type Edge struct {
 	Label string `json:"label"`
 	// Attrs are edge attributes
 	Attrs map[string]interface{} `json:"attributes,omitempty"`
+	// Timestamps for graph creation & last update.
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // EdgeService represents a service for managing Edges.

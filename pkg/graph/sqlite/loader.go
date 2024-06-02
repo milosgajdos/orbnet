@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/milosgajdos/orbnet/pkg/graph"
 	"github.com/milosgajdos/orbnet/pkg/graph/memory"
@@ -33,15 +34,19 @@ func (l *Loader) Load(ctx context.Context, uid string) (graph.Graph, error) {
 	var (
 		label     string
 		attrsJSON string
-		createdAt string
-		updatedAt string
+		createdAt time.Time
+		updatedAt time.Time
 	)
 
 	err = tx.QueryRowContext(ctx, `
-		SELECT label, attrs, created_at, updated_at
+		SELECT
+			label,
+			attrs,
+			created_at,
+			updated_at
 		FROM graphs
 		WHERE uid = ?
-	`, uid).Scan(&label, &attrsJSON, &createdAt, &updatedAt)
+	`, uid).Scan(&label, &attrsJSON, (*NullTime)(&createdAt), (*NullTime)(&updatedAt))
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve graph: %w", err)
 	}
@@ -63,7 +68,13 @@ func (l *Loader) Load(ctx context.Context, uid string) (graph.Graph, error) {
 
 	// Retrieve nodes
 	rows, err := tx.QueryContext(ctx, `
-		SELECT id, uid, label, attrs
+		SELECT
+			id,
+			uid,
+			label,
+			attrs,
+			created_at,
+			updated_at
 		FROM nodes
 		WHERE graph = ?
 	`, uid)
@@ -80,9 +91,11 @@ func (l *Loader) Load(ctx context.Context, uid string) (graph.Graph, error) {
 			nodeUID       string
 			nodeLabel     string
 			nodeAttrsJSON string
+			createdAt     time.Time
+			updatedAt     time.Time
 		)
 
-		if err := rows.Scan(&id, &nodeUID, &nodeLabel, &nodeAttrsJSON); err != nil {
+		if err := rows.Scan(&id, &nodeUID, &nodeLabel, &nodeAttrsJSON, (*NullTime)(&createdAt), (*NullTime)(&updatedAt)); err != nil {
 			return nil, fmt.Errorf("failed to scan node: %w", err)
 		}
 
@@ -110,7 +123,15 @@ func (l *Loader) Load(ctx context.Context, uid string) (graph.Graph, error) {
 
 	// Retrieve edges
 	edgeRows, err := tx.QueryContext(ctx, `
-		SELECT uid, source, target, label, weight, attrs
+		SELECT
+			uid,
+			source,
+			target,
+			label,
+			weight,
+			attrs,
+			created_at,
+			updated_at
 		FROM edges
 		WHERE graph = ?
 	`, uid)
@@ -127,9 +148,12 @@ func (l *Loader) Load(ctx context.Context, uid string) (graph.Graph, error) {
 			edgeLabel     string
 			weight        float64
 			edgeAttrsJSON string
+			createdAt     time.Time
+			updatedAt     time.Time
 		)
 
-		err := edgeRows.Scan(&edgeUID, &sourceUID, &targetUID, &edgeLabel, &weight, &edgeAttrsJSON)
+		err := edgeRows.Scan(&edgeUID, &sourceUID, &targetUID, &edgeLabel,
+			&weight, &edgeAttrsJSON, (*NullTime)(&createdAt), (*NullTime)(&updatedAt))
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan edge: %w", err)
 		}
