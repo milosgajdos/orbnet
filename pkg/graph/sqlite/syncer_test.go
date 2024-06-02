@@ -163,11 +163,11 @@ func TestSyncer_Sync(t *testing.T) {
 		t.Errorf("expected edge UID %v, got %v", edge.UID(), edgeUID)
 	}
 
-	if uid := edge.From().(graph.Node).UID(); uid != sourceUID {
-		t.Errorf("expected source UID %v, got %v", uid, sourceUID)
+	if fromUID := edge.From().(graph.Node).UID(); fromUID != sourceUID {
+		t.Errorf("expected source UID %v, got %v", fromUID, sourceUID)
 	}
-	if uid := edge.To().(graph.Node).UID(); uid != targetUID {
-		t.Errorf("expected target UID %v, got %v", uid, targetUID)
+	if toUID := edge.To().(graph.Node).UID(); toUID != targetUID {
+		t.Errorf("expected target UID %v, got %v", toUID, targetUID)
 	}
 	if edgeLabel != edge.Label() {
 		t.Errorf("expected edge label %v, got %v", edge.Label(), edgeLabel)

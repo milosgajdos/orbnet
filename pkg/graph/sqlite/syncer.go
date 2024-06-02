@@ -133,24 +133,19 @@ func (s *Syncer) syncEdge(ctx context.Context, tx *sql.Tx, graphUID string, e gr
 		return err
 	}
 
+	// Retrieve source and target node UIDs directly
+	sourceUID := e.From().(graph.Node).UID()
+	targetUID := e.To().(graph.Node).UID()
+
 	// Execute insertion query.
 	_, err = tx.ExecContext(ctx, `
-		WITH source_node AS (
-		    SELECT uid AS source_uid FROM nodes WHERE id = ?
-		),
-		target_node AS (
-		    SELECT uid AS target_uid FROM nodes WHERE id = ?
-		)
 		INSERT INTO edges (uid, graph, source, target, label, weight, attrs)
-		VALUES (?, ?,
-			(SELECT source_uid FROM source_node),
-			(SELECT target_uid FROM target_node),
-		?, ?, ?);
+		VALUES (?, ?, ?, ?, ?, ?, ?);
 	`,
-		e.From().ID(),
-		e.To().ID(),
 		e.UID(),
 		graphUID,
+		sourceUID,
+		targetUID,
 		e.Label(),
 		e.Weight(),
 		string(attrs),
