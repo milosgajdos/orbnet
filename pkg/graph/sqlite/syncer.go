@@ -128,6 +128,9 @@ func (s *Syncer) syncNode(ctx context.Context, tx *sql.Tx, graphUID string, n gr
 
 // syncEdge stores edge in the sqlite DB.
 func (s *Syncer) syncEdge(ctx context.Context, tx *sql.Tx, graphUID string, e graph.Edge) error {
+	createdAt := time.Now()
+	updatedAt := createdAt
+
 	attrs, err := json.Marshal(e.Attrs())
 	if err != nil {
 		return err
@@ -139,8 +142,18 @@ func (s *Syncer) syncEdge(ctx context.Context, tx *sql.Tx, graphUID string, e gr
 
 	// Execute insertion query.
 	_, err = tx.ExecContext(ctx, `
-		INSERT INTO edges (uid, graph, source, target, label, weight, attrs)
-		VALUES (?, ?, ?, ?, ?, ?, ?);
+		INSERT INTO edges (
+			uid,
+			graph,
+			source,
+			target,
+			label,
+			weight,
+			attrs,
+			created_at,
+			updated_at
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`,
 		e.UID(),
 		graphUID,
@@ -149,6 +162,8 @@ func (s *Syncer) syncEdge(ctx context.Context, tx *sql.Tx, graphUID string, e gr
 		e.Label(),
 		e.Weight(),
 		string(attrs),
+		(*NullTime)(&createdAt),
+		(*NullTime)(&updatedAt),
 	)
 	if err != nil {
 		return err

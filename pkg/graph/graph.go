@@ -15,8 +15,6 @@ type Graph interface {
 	UID() string
 	// Edges returns graph edges iterator.
 	Edges() graph.Edges
-	// Type returns the type of graph.
-	Type() string
 	// Label returns graph label.
 	Label() string
 	// Attrs are graph attributes.
@@ -118,13 +116,6 @@ type EdgeUpdater interface {
 	Graph
 	graph.WeightedEdgeAdder
 	graph.EdgeRemover
-}
-
-// Builder builds a graph.
-type Builder interface {
-	// Build graph by adding nodes and edges from the data
-	// received on the given channel.
-	Build(context.Context, <-chan interface{}) error
 }
 
 // Marshaler is used for marshaling graphs.

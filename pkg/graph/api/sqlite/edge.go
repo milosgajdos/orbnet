@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
 )
@@ -30,6 +31,9 @@ func (es *EdgeService) CreateEdge(ctx context.Context, graphUID string, e *api.E
 	// nolint:errcheck
 	defer tx.Rollback()
 
+	e.CreatedAt = time.Now()
+	e.UpdatedAt = e.CreatedAt
+
 	attrs, err := json.Marshal(e.Attrs)
 	if err != nil {
 		return err
@@ -44,9 +48,11 @@ func (es *EdgeService) CreateEdge(ctx context.Context, graphUID string, e *api.E
 			target,
 			label,
 			weight,
-			attrs
+			attrs,
+			created_at,
+			updated_at
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`,
 		e.UID,
 		graphUID,
@@ -55,6 +61,8 @@ func (es *EdgeService) CreateEdge(ctx context.Context, graphUID string, e *api.E
 		e.Label,
 		e.Weight,
 		string(attrs),
+		(*NullTime)(&e.CreatedAt),
+		(*NullTime)(&e.UpdatedAt),
 	)
 	if err != nil {
 		return err
@@ -151,7 +159,15 @@ func findEdgeByUID(ctx context.Context, tx *Tx, graphUID, edgeUID string) (*api.
 	var edge api.Edge
 	var attrString string
 	if err := tx.QueryRowContext(ctx, `
-		SELECT uid, source, target, label, weight, attrs
+		SELECT
+			uid,
+			source,
+			target,
+			label,
+			weight,
+			attrs,
+			created_at,
+			updated_at
 		FROM edges
 		WHERE uid = ? AND graph = ?
 	`, edgeUID, graphUID).Scan(
@@ -161,6 +177,8 @@ func findEdgeByUID(ctx context.Context, tx *Tx, graphUID, edgeUID string) (*api.
 		&edge.Label,
 		&edge.Weight,
 		&attrString,
+		(*NullTime)(&edge.CreatedAt),
+		(*NullTime)(&edge.UpdatedAt),
 	); err != nil {
 		return nil, &api.Error{Code: api.ENOTFOUND, Message: "Edge not found."}
 	}
@@ -208,6 +226,8 @@ func findEdges(ctx context.Context, tx *Tx, graphUID string, filter api.EdgeFilt
 		    label,
 		    weight,
 		    attrs,
+		    created_at,
+		    updated_at,
 		    COUNT(*) OVER()
 		FROM edges
 		WHERE ` + strings.Join(where, " AND ") + `
@@ -230,6 +250,8 @@ func findEdges(ctx context.Context, tx *Tx, graphUID string, filter api.EdgeFilt
 			&edge.Label,
 			&edge.Weight,
 			&attrString,
+			(*NullTime)(&edge.CreatedAt),
+			(*NullTime)(&edge.UpdatedAt),
 			&n,
 		); err != nil {
 			return nil, 0, err
@@ -277,11 +299,14 @@ func updateEdgeBetween(ctx context.Context, tx *Tx, graphUID, source, target str
 		edge.Weight = *update.Weight
 	}
 
+	edge.UpdatedAt = time.Now()
+
 	// Prepare the SQL query for updating the edge.
-	sqlQuery := "UPDATE edges SET label = ?, weight = ?"
+	sqlQuery := "UPDATE edges SET label = ?, weight = ?, updated_at = ?"
 	args := []interface{}{
 		edge.Label,
 		edge.Weight,
+		(*NullTime)(&edge.UpdatedAt),
 	}
 
 	if len(update.Attrs) > 0 {
@@ -334,8 +359,17 @@ func deleteEdgeBetween(ctx context.Context, tx *Tx, graphUID, source, target str
 func findEdgeBetween(ctx context.Context, tx *Tx, graphUID, source, target string) (*api.Edge, error) {
 	var edge api.Edge
 	var attrString string
+
 	if err := tx.QueryRowContext(ctx, `
-		SELECT uid, source, target, label, weight, attrs
+		SELECT
+			uid,
+			source,
+			target,
+			label,
+			weight,
+			attrs,
+			created_at,
+			updated_at
 		FROM edges
 		WHERE source = ? AND target = ? AND graph = ?
 	`, source, target, graphUID).Scan(
@@ -345,6 +379,8 @@ func findEdgeBetween(ctx context.Context, tx *Tx, graphUID, source, target strin
 		&edge.Label,
 		&edge.Weight,
 		&attrString,
+		(*NullTime)(&edge.CreatedAt),
+		(*NullTime)(&edge.UpdatedAt),
 	); err != nil {
 		return nil, &api.Error{Code: api.ENOTFOUND, Message: "Edge not found."}
 	}

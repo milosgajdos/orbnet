@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS edges (
     label TEXT,
     weight REAL DEFAULT 1.0,
     attrs TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
     FOREIGN KEY (source) REFERENCES nodes (uid) ON DELETE CASCADE,
     FOREIGN KEY (target) REFERENCES nodes (uid) ON DELETE CASCADE,
     FOREIGN KEY (graph) REFERENCES graphs (uid) ON DELETE CASCADE

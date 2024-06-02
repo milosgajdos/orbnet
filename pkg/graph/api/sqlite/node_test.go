@@ -124,12 +124,12 @@ func TestNodeService_FindNodes(t *testing.T) {
 
 	// Create edges
 	_, err := db.db.ExecContext(ctx, `
-		INSERT INTO edges (uid, graph, source, target, label)
-		VALUES ('edge12', ?, 'node1fn', 'node2fn', 'Edge12'),
-		       ('edge13', ?, 'node1fn', 'node3fn', 'Edge13'),
-		       ('edge23', ?, 'node2fn', 'node3fn', 'Edge23'),
-		       ('edge42', ?, 'node4fn', 'node2fn', 'Edge42'),
-		       ('edge34', ?, 'node3fn', 'node4fn', 'Edge34')
+		INSERT INTO edges (uid, graph, source, target, label, created_at, updated_at)
+		VALUES ('edge12', ?, 'node1fn', 'node2fn', 'Edge12', DateTime('now'), DateTime('now')),
+		       ('edge13', ?, 'node1fn', 'node3fn', 'Edge13', DateTime('now'), DateTime('now')),
+		       ('edge23', ?, 'node2fn', 'node3fn', 'Edge23', DateTime('now'), DateTime('now')),
+		       ('edge42', ?, 'node4fn', 'node2fn', 'Edge42', DateTime('now'), DateTime('now')),
+		       ('edge34', ?, 'node3fn', 'node4fn', 'Edge34', DateTime('now'), DateTime('now'))
 	`, graphUID, graphUID, graphUID, graphUID, graphUID)
 	if err != nil {
 		t.Fatal(err)
