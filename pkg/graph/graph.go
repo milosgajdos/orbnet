@@ -138,3 +138,13 @@ type Unmarshaler interface {
 	// Unmarshal unmarshals arbitrary bytes into graph.
 	Unmarshal([]byte, Graph) error
 }
+
+// Syncer syncs the graph to a database or a filesystem.
+type Syncer interface {
+	Sync(context.Context, Graph) error
+}
+
+// Loader loads a graph from a databse or a filesystem.
+type Loader interface {
+	Load(context.Context, string) (Graph, error)
+}

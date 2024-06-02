@@ -16,11 +16,11 @@ func TestTxCreateNode(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -29,9 +29,9 @@ func TestTxCreateNode(t *testing.T) {
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, "foo", n); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -47,11 +47,11 @@ func TestTxFindNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -70,11 +70,11 @@ func TestTxFindNodeByID(t *testing.T) {
 	t.Run("NotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -94,11 +94,11 @@ func TestTxFindNodeByiUID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -117,11 +117,11 @@ func TestTxFindNodeByiUID(t *testing.T) {
 	t.Run("NotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -143,6 +143,7 @@ func TestTxFindNodes(t *testing.T) {
 	graphUID := "cc099040-9dab-4f3d-848e-3046912aa281"
 
 	testID := int64(1)
+	testUID := "3ba4972d-c780-4308-9ca8-fe466b60da20"
 	testLabel := "Repo"
 	toTestLabel := "Topic"
 	fromTestLabel := "Owner"
@@ -165,12 +166,12 @@ func TestTxFindNodes(t *testing.T) {
 		{"IDMatch", graphUID, api.NodeFilter{ID: &testID}, 1, 1, false},
 		{"IDMatch_LabelMatch", graphUID, api.NodeFilter{ID: &testID, Label: &testLabel}, 1, 1, false},
 		{"IDMatch_LabelNoMatch", graphUID, api.NodeFilter{ID: &testID, Label: &randLabel}, 0, 0, false},
-		{"ToIDMatch", graphUID, api.NodeFilter{To: &testID}, 2, 2, false},
-		{"ToIDMatch_LabelMatch", graphUID, api.NodeFilter{To: &testID, Label: &toTestLabel}, 2, 2, false},
-		{"ToIDMatch_LabelNoMatch", graphUID, api.NodeFilter{To: &testID, Label: &randLabel}, 0, 0, false},
-		{"FromIDMatch", graphUID, api.NodeFilter{From: &testID}, 2, 2, false},
-		{"FromIDMatch_LabelMatch", graphUID, api.NodeFilter{From: &testID, Label: &fromTestLabel}, 2, 2, false},
-		{"FromIDMatch_LabelNoMatch", graphUID, api.NodeFilter{From: &testID, Label: &randLabel}, 0, 0, false},
+		{"ToIDMatch", graphUID, api.NodeFilter{Target: &testUID}, 2, 2, false},
+		{"ToIDMatch_LabelMatch", graphUID, api.NodeFilter{Target: &testUID, Label: &toTestLabel}, 2, 2, false},
+		{"ToIDMatch_LabelNoMatch", graphUID, api.NodeFilter{Target: &testUID, Label: &randLabel}, 0, 0, false},
+		{"FromIDMatch", graphUID, api.NodeFilter{Source: &testUID}, 2, 2, false},
+		{"FromIDMatch_LabelMatch", graphUID, api.NodeFilter{Source: &testUID, Label: &fromTestLabel}, 2, 2, false},
+		{"FromIDMatch_LabelNoMatch", graphUID, api.NodeFilter{Source: &testUID, Label: &randLabel}, 0, 0, false},
 		{"LabelOnly", graphUID, api.NodeFilter{Label: &testLabel}, 2, 2, false},
 		{"LabelOnly_WithOffsetLimit", graphUID, api.NodeFilter{Label: &testLabel, Offset: 1, Limit: 1}, 1, 2, false},
 		{"LabelOnly_WithNegOffset", graphUID, api.NodeFilter{Label: &testLabel, Offset: -1}, 2, 2, false},
@@ -206,7 +207,7 @@ func TestTxUpdateNode(t *testing.T) {
 
 	t.Run("GraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if _, err := tx.UpdateNode(ctx, "randomUID", 10, api.NodeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -216,11 +217,11 @@ func TestTxUpdateNode(t *testing.T) {
 	t.Run("NodeNotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -234,11 +235,11 @@ func TestTxUpdateNode(t *testing.T) {
 	t.Run("LabelAttrs", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -275,11 +276,11 @@ func TestTxUpdateNode(t *testing.T) {
 	t.Run("NoUpdate", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -290,8 +291,8 @@ func TestTxUpdateNode(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if n.Label != n2.Label() {
-			t.Errorf("expected label: %s, got: %s", n.Label, n2.Label())
+		if *n.Label != n2.Label() {
+			t.Errorf("expected label: %s, got: %s", *n.Label, n2.Label())
 		}
 	})
 }
@@ -304,11 +305,11 @@ func TestTxDeleteNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -321,7 +322,7 @@ func TestTxDeleteNodeByID(t *testing.T) {
 
 	t.Run("GraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteNodeByID(ctx, "randomUID", 10); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -337,11 +338,11 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		uid := g.UID()
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := tx.CreateNode(ctx, uid, n); err != nil {
 			t.Fatal(err)
@@ -355,7 +356,7 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 	t.Run("NodeNotFound", func(t *testing.T) {
 		ctx := context.TODO()
 		g := MustGraph(t)
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 		MustAddGraph(t, ctx, tx, g)
 
 		if err := tx.DeleteNodeByUID(ctx, g.UID(), "randomUID"); api.ErrorCode(err) != api.ENOTFOUND {
@@ -365,7 +366,7 @@ func TestTxDeleteNodeByUID(t *testing.T) {
 
 	t.Run("GraphNotFound", func(t *testing.T) {
 		ctx := context.TODO()
-		tx := MustOpenTx(t, ctx, MemoryDSN)
+		tx := MustOpenTx(t, ctx, DSN)
 
 		if err := tx.DeleteNodeByUID(ctx, "randomUID", "doesntMatter"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)

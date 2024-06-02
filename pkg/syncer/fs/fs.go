@@ -9,12 +9,15 @@ import (
 	"sync"
 )
 
+// Syncer is a filesystem syncer.
 type Syncer struct {
 	sync.RWMutex
 	dst   string
 	count int
 }
 
+// NewSyncer creates a new filesystem syncer and returns it.
+// If dst is an empty string syncer streams the data to stdout.
 func NewSyncer(dst string) (*Syncer, error) {
 	return &Syncer{
 		dst:   dst,
@@ -34,9 +37,10 @@ func (s *Syncer) newEncoder(idx int) (*json.Encoder, error) {
 	return json.NewEncoder(os.Stdout), nil
 }
 
+// Sync stores the data received via channel ch on the filesystem
 // nolint:revive
-func (s *Syncer) Sync(ctx context.Context, reposChan <-chan interface{}) error {
-	for repos := range reposChan {
+func (s *Syncer) Sync(ctx context.Context, ch <-chan interface{}) error {
+	for repos := range ch {
 		s.RLock()
 		idx := s.count
 		s.RUnlock()

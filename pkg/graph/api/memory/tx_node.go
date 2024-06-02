@@ -29,8 +29,8 @@ func (t *Tx) CreateNode(ctx context.Context, uid string, n *api.Node) error {
 
 	var opts []memory.Option
 
-	if n.Label != "" {
-		opts = append(opts, memory.WithLabel(n.Label))
+	if *n.Label != "" {
+		opts = append(opts, memory.WithLabel(*n.Label))
 	}
 
 	if n.Attrs != nil {
@@ -47,7 +47,7 @@ func (t *Tx) CreateNode(ctx context.Context, uid string, n *api.Node) error {
 
 	n.ID = node.ID()
 	n.UID = node.UID()
-	n.Label = node.Label()
+	n.Label = StringPtr(node.Label())
 	n.Attrs = node.Attrs()
 	n.DegIn = 0
 	n.DegOut = 0
@@ -205,8 +205,18 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 	var err error
 
 	// To has been provided
-	if to := filter.To; to != nil {
-		nodes, err = filterNodes(ctx, g.To(*to), g, filter)
+	if to := filter.Target; to != nil {
+		// TODO: make this more efficient
+		// This iterates over g.Nodes searching for to.
+		// We then iterate over all its incoming nodes.
+		node, err := t.findNodeByUID(ctx, g, *to)
+		if err != nil {
+			if code := api.ErrorCode(err); code == api.ENOTFOUND {
+				return []*TxNode{}, 0, nil
+			}
+			return nil, 0, err
+		}
+		nodes, err = filterNodes(ctx, g.To(node.ID()), g, filter)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -214,8 +224,18 @@ func (t *Tx) FindNodes(ctx context.Context, uid string, filter api.NodeFilter) (
 	}
 
 	// From has been provided
-	if from := filter.From; from != nil {
-		nodes, err = filterNodes(ctx, g.From(*from), g, filter)
+	if from := filter.Source; from != nil {
+		// TODO: make this more efficient
+		// This iterates over g.Nodes searching for from
+		// We then iterate over all its outgoing nodes.
+		node, err := t.findNodeByUID(ctx, g, *from)
+		if err != nil {
+			if code := api.ErrorCode(err); code == api.ENOTFOUND {
+				return []*TxNode{}, 0, nil
+			}
+			return nil, 0, err
+		}
+		nodes, err = filterNodes(ctx, g.From(node.ID()), g, filter)
 		if err != nil {
 			return nil, 0, err
 		}

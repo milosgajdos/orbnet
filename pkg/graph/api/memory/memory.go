@@ -20,8 +20,8 @@ var (
 const (
 	// DefaultLabel is the default graph label.
 	DefaultLabel = "MemoryGraph"
-	// MemoryDSN is the in-memory data source name.
-	MemoryDSN = ":memory:"
+	// DSN is the in-memory data source name.
+	DSN = ":memory:"
 )
 
 // DB is an in-memory graph store.
@@ -64,7 +64,7 @@ func (db *DB) Open() (err error) {
 		return fmt.Errorf("dsn required")
 	}
 
-	if db.DSN != MemoryDSN {
+	if db.DSN != DSN {
 		if db.db, err = openFromFS(os.DirFS(db.DSN)); err != nil {
 			return err
 		}
@@ -101,6 +101,10 @@ func (db *DB) BeginTx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		db: db,
 	}, nil
+}
+
+func StringPtr(s string) *string {
+	return &s
 }
 
 // openFromFS opens DB and loads all data stored on the given fs.

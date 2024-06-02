@@ -29,7 +29,7 @@ func TestOpenDB(t *testing.T) {
 	}
 
 	t.Run("memory", func(t *testing.T) {
-		db := MustDB(t, MemoryDSN)
+		db := MustDB(t, DSN)
 		if err := db.Open(); err != nil {
 			t.Fatalf("failed to open memory DB: %v", err)
 		}
@@ -56,14 +56,14 @@ func TestCloseDB(t *testing.T) {
 	}
 
 	t.Run("open", func(t *testing.T) {
-		db := MustOpenDB(t, MemoryDSN)
+		db := MustOpenDB(t, DSN)
 		if err := db.Close(); err != nil {
 			t.Fatalf("failed to close DB: %v", err)
 		}
 	})
 
 	t.Run("closed", func(t *testing.T) {
-		db := MustOpenDB(t, MemoryDSN)
+		db := MustOpenDB(t, DSN)
 		if err := db.Close(); err != nil {
 			t.Fatalf("failed to close DB: %v", err)
 		}
@@ -76,14 +76,14 @@ func TestBeginTx(t *testing.T) {
 	}
 
 	t.Run("open", func(t *testing.T) {
-		db := MustOpenDB(t, MemoryDSN)
+		db := MustOpenDB(t, DSN)
 		if _, err := db.BeginTx(context.Background()); err != nil {
 			t.Fatalf("failed starting a transaction: %v", err)
 		}
 	})
 
 	t.Run("closed", func(t *testing.T) {
-		db := MustOpenDB(t, MemoryDSN)
+		db := MustOpenDB(t, DSN)
 		if err := db.Close(); err != nil {
 			t.Fatalf("failed to close DB: %v", err)
 		}

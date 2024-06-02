@@ -123,8 +123,8 @@
   "edges": [
     {
       "uid": "af3e8d5e-b518-422e-9f4d-04ba919da09a",
-      "source": 2,
-      "target": 0,
+      "source": "8796cc19-a6f4-4bbf-8fd7-4dde5ad74a70",
+      "target": "a877d937-673d-4b43-bb5c-8f9387e43298",
       "weight": 1,
       "label": "HasOwner",
       "attributes": {
@@ -142,8 +142,8 @@
     },
     {
       "uid": "d918672e-ce39-4881-a6c6-d06e842295c4",
-      "source": 3,
-      "target": 4,
+      "source": "64154c2f-6a0f-4432-8f3e-4e9192d1f146",
+      "target": "7817e62b-1625-48d1-88b2-b7cc5560eab0",
       "weight": 1,
       "label": "HasOwner",
       "attributes": {
@@ -161,8 +161,8 @@
     },
     {
       "uid": "5d713f91-97db-4a9c-80d4-4db1bf7427d2",
-      "source": 4,
-      "target": 1,
+      "source": "7817e62b-1625-48d1-88b2-b7cc5560eab0",
+      "target": "3ba4972d-c780-4308-9ca8-fe466b60da20",
       "weight": 1,
       "label": "HasOwner",
       "attributes": {
@@ -180,8 +180,8 @@
     },
     {
       "uid": "b2f42acb-fea2-4584-902b-0c4a01b51037",
-      "source": 0,
-      "target": 1,
+      "source": "a877d937-673d-4b43-bb5c-8f9387e43298",
+      "target": "3ba4972d-c780-4308-9ca8-fe466b60da20",
       "weight": 1,
       "label": "HasLang",
       "attributes": {
@@ -199,8 +199,8 @@
     },
     {
       "uid": "e52b6616-48f3-4bab-ba8e-75165c4b882f",
-      "source": 1,
-      "target": 2,
+      "source": "3ba4972d-c780-4308-9ca8-fe466b60da20",
+      "target": "8796cc19-a6f4-4bbf-8fd7-4dde5ad74a70",
       "weight": 1,
       "label": "HasOwner",
       "attributes": {
@@ -218,8 +218,8 @@
     },
     {
       "uid": "237b3671-2db0-4d48-b9d7-4f0f7adb0c4e",
-      "source": 1,
-      "target": 3,
+      "source": "3ba4972d-c780-4308-9ca8-fe466b60da20",
+      "target": "64154c2f-6a0f-4432-8f3e-4e9192d1f146",
       "weight": 1,
       "label": "HasLang",
       "attributes": {

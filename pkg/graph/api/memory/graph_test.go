@@ -32,11 +32,9 @@ func TestCreateGraph(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
-
+		gs := MustGraphService(t, DSN)
 		ag := &api.Graph{
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 			Attrs: map[string]interface{}{
 				"foo": "bar",
 				"car": 10,
@@ -53,11 +51,10 @@ func TestCreateGraph(t *testing.T) {
 	})
 
 	t.Run("DuplicateUID", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 		}
 
 		if err := gs.CreateGraph(context.TODO(), ag); err != nil {
@@ -66,8 +63,7 @@ func TestCreateGraph(t *testing.T) {
 
 		ag2 := &api.Graph{
 			UID:   ag.UID,
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 		}
 
 		if err := gs.CreateGraph(context.TODO(), ag2); err == nil {
@@ -76,11 +72,10 @@ func TestCreateGraph(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		ag := &api.Graph{
-			Type:  "foobar_type",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 		}
 
 		if err := gs.CreateGraph(context.TODO(), ag); !errors.Is(err, ErrDBClosed) {
@@ -95,11 +90,10 @@ func TestFindGraphByUID(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 			Attrs: map[string]interface{}{
 				"foo": "bar",
 				"car": 10,
@@ -121,7 +115,7 @@ func TestFindGraphByUID(t *testing.T) {
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		if _, err := gs.FindGraphByUID(context.TODO(), "garbageUID"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -129,7 +123,7 @@ func TestFindGraphByUID(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if _, err := gs.FindGraphByUID(context.TODO(), "foo"); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)
@@ -146,11 +140,9 @@ func TestFindGraphs(t *testing.T) {
 	// NOTE(milosgajdos): these come from testdata/sample.json
 	testUID := "cc099040-9dab-4f3d-848e-3046912aa281"
 	testLabel := "test"
-	testType := "weighted_directed"
 
 	randUID := "randUID"
 	randLabel := "randLabel"
-	randType := "randType"
 
 	testCases := []struct {
 		name       string
@@ -162,19 +154,15 @@ func TestFindGraphs(t *testing.T) {
 		{"UID", api.GraphFilter{UID: &randUID}, 0, 0, false},
 		{"UID", api.GraphFilter{UID: &testUID}, 1, 1, false},
 		{"UID", api.GraphFilter{UID: &testUID, Label: &testLabel}, 1, 1, false},
-		{"UID", api.GraphFilter{UID: &testUID, Label: &testLabel, Type: &testType}, 1, 1, false},
 		{"UID", api.GraphFilter{UID: &testUID, Label: &randLabel}, 0, 0, false},
-		{"UID", api.GraphFilter{UID: &testUID, Type: &randType}, 0, 0, false},
-		{"TypeLabel", api.GraphFilter{}, 2, 2, false},
-		{"TypeLabel", api.GraphFilter{Label: &testLabel}, 2, 2, false},
-		{"TypeLabel", api.GraphFilter{Label: &testLabel, Type: &testType}, 2, 2, false},
-		{"TypeLabel", api.GraphFilter{Label: &randLabel}, 0, 0, false},
-		{"TypeLabel", api.GraphFilter{Type: &randType}, 0, 0, false},
-		{"LimitOffset", api.GraphFilter{Type: &testType, Offset: 100}, 0, 2, false},
-		{"LimitOffset", api.GraphFilter{Type: &testType, Offset: -1}, 2, 2, false},
-		{"LimitOffset", api.GraphFilter{Type: &testType, Offset: 1}, 1, 2, false},
-		{"LimitOffset", api.GraphFilter{Type: &testType, Offset: 1, Limit: 1}, 1, 2, false},
-		{"LimitOffset", api.GraphFilter{Type: &testType, Offset: 1, Limit: 10}, 1, 2, false},
+		{"NoTypeLabel", api.GraphFilter{}, 2, 2, false},
+		{"TestLabel", api.GraphFilter{Label: &testLabel}, 2, 2, false},
+		{"RandLabel", api.GraphFilter{Label: &randLabel}, 0, 0, false},
+		{"TestLabelLimitOffset", api.GraphFilter{Label: &testLabel, Offset: 100}, 0, 2, false},
+		{"TestLabelLimitOffset", api.GraphFilter{Label: &testLabel, Offset: -1}, 2, 2, false},
+		{"LimitOffset", api.GraphFilter{Label: &testLabel, Offset: 1}, 1, 2, false},
+		{"LimitOffset", api.GraphFilter{Label: &testLabel, Offset: 1, Limit: 1}, 1, 2, false},
+		{"LimitOffset", api.GraphFilter{Label: &testLabel, Offset: 1, Limit: 10}, 1, 2, false},
 	}
 
 	gs := MustGraphService(t, testDir)
@@ -199,7 +187,7 @@ func TestFindGraphs(t *testing.T) {
 	}
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if _, _, err := gs.FindGraphs(context.TODO(), api.GraphFilter{}); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)
@@ -213,11 +201,10 @@ func TestUpdateGraph(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 			Attrs: map[string]interface{}{
 				"foo": "bar",
 				"car": 10,
@@ -242,8 +229,8 @@ func TestUpdateGraph(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if g.Label != newLabel {
-			t.Fatalf("expected label: %s, got: %s", newLabel, g.Label)
+		if *g.Label != newLabel {
+			t.Fatalf("expected label: %s, got: %s", newLabel, *g.Label)
 		}
 
 		if val := g.Attrs[fooKey]; val != fooVal {
@@ -252,11 +239,10 @@ func TestUpdateGraph(t *testing.T) {
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 			Attrs: map[string]interface{}{
 				"foo": "bar",
 				"car": 10,
@@ -278,7 +264,7 @@ func TestUpdateGraph(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if _, err := gs.UpdateGraph(context.TODO(), "garbageUID", api.GraphUpdate{}); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)
@@ -292,11 +278,10 @@ func TestDeleteGraph(t *testing.T) {
 	}
 
 	t.Run("OK", func(t *testing.T) {
-		gs := MustGraphService(t, MemoryDSN)
+		gs := MustGraphService(t, DSN)
 
 		ag := &api.Graph{
-			Type:  "weighted_directed",
-			Label: "Foo",
+			Label: StringPtr("Foo"),
 			Attrs: map[string]interface{}{
 				"foo": "bar",
 				"car": 10,
@@ -313,7 +298,7 @@ func TestDeleteGraph(t *testing.T) {
 	})
 
 	t.Run("ClosedDB", func(t *testing.T) {
-		gs := MustClosedGraphService(t, MemoryDSN)
+		gs := MustClosedGraphService(t, DSN)
 
 		if err := gs.DeleteGraph(context.TODO(), "foo"); !errors.Is(err, ErrDBClosed) {
 			t.Fatalf("expected error: %v, got: %v", ErrDBClosed, err)

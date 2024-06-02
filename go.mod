@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/swagger v0.1.14
 	github.com/google/go-github/v61 v61.0.0
 	github.com/google/uuid v1.6.0
+	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/swaggo/swag v1.16.2
 	golang.org/x/oauth2 v0.19.0
 	golang.org/x/sync v0.1.0

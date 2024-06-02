@@ -1,11 +1,9 @@
 package http
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/milosgajdos/orbnet/pkg/graph/api"
 )
 
@@ -51,7 +49,7 @@ func (s *Server) GetAllGraphs(c *fiber.Ctx) error {
 		filter.Limit = limit
 	}
 
-	graphs, n, err := s.GraphService.FindGraphs(context.TODO(), filter)
+	graphs, n, err := s.GraphService.FindGraphs(c.Context(), filter)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error: err.Error(),
@@ -71,20 +69,11 @@ func (s *Server) GetAllGraphs(c *fiber.Ctx) error {
 // @Produce json
 // @Param uid path string true "Graph UID"
 // @Success 200 {object} api.Graph
-// @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{uid} [get]
 func (s *Server) GetGraphByUID(c *fiber.Ctx) error {
-	// Grab Graph UID from request.
-	uid, err := uuid.Parse(c.Params("uid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
-
-	graph, err := s.GraphService.FindGraphByUID(context.TODO(), uid.String())
+	graph, err := s.GraphService.FindGraphByUID(c.Context(), c.Params("uid"))
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -120,7 +109,7 @@ func (s *Server) CreateGraph(c *fiber.Ctx) error {
 	}
 
 	// TODO(milosgajdos): validate graph here
-	if err := s.GraphService.CreateGraph(context.TODO(), graph); err != nil {
+	if err := s.GraphService.CreateGraph(c.Context(), graph); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error: err.Error(),
 		})
@@ -143,14 +132,6 @@ func (s *Server) CreateGraph(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{uid} [patch]
 func (s *Server) UpdateGraph(c *fiber.Ctx) error {
-	// Grab Graph UID from request.
-	uid, err := uuid.Parse(c.Params("uid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
-
 	update := new(api.GraphUpdate)
 	if err := c.BodyParser(update); err != nil {
 		// TODO(milosgajdos): validate update data
@@ -160,7 +141,7 @@ func (s *Server) UpdateGraph(c *fiber.Ctx) error {
 		})
 	}
 
-	graph, err := s.GraphService.UpdateGraph(context.TODO(), uid.String(), *update)
+	graph, err := s.GraphService.UpdateGraph(c.Context(), c.Params("uid"), *update)
 	if err != nil {
 		if code := api.ErrorCode(err); code == api.ENOTFOUND {
 			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
@@ -183,18 +164,11 @@ func (s *Server) UpdateGraph(c *fiber.Ctx) error {
 // @Produce json
 // @Param uid path string true "Graph UID"
 // @Success 204 {string} status "Graph was deleted successfully"
-// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/graphs/{uid} [delete]
 func (s *Server) DeleteGraph(c *fiber.Ctx) error {
-	uid, err := uuid.Parse(c.Params("uid"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Error: err.Error(),
-		})
-	}
-
-	if err := s.GraphService.DeleteGraph(context.TODO(), uid.String()); err != nil {
+	if err := s.GraphService.DeleteGraph(c.Context(), c.Params("uid")); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error: err.Error(),
 		})

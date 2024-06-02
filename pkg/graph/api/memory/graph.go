@@ -41,10 +41,9 @@ func (gs *GraphService) FindGraphByUID(ctx context.Context, uid string) (*api.Gr
 
 	return &api.Graph{
 		UID:   dg.UID(),
-		Type:  dg.Type(),
 		Nodes: dg.Nodes().Len(),
 		Edges: dg.Edges().Len(),
-		Label: dg.Label(),
+		Label: StringPtr(dg.Label()),
 		Attrs: dg.Attrs(),
 	}, nil
 }
@@ -68,10 +67,9 @@ func (gs *GraphService) FindGraphs(ctx context.Context, filter api.GraphFilter) 
 	for i, fg := range gx {
 		graphs[i] = &api.Graph{
 			UID:   fg.UID(),
-			Type:  fg.Type(),
 			Nodes: fg.Nodes().Len(),
 			Edges: fg.Edges().Len(),
-			Label: fg.Label(),
+			Label: StringPtr(fg.Label()),
 			Attrs: fg.Attrs(),
 		}
 	}
@@ -93,10 +91,9 @@ func (gs *GraphService) UpdateGraph(ctx context.Context, uid string, update api.
 
 	return &api.Graph{
 		UID:   ug.UID(),
-		Type:  ug.Type(),
 		Nodes: ug.Nodes().Len(),
 		Edges: ug.Edges().Len(),
-		Label: ug.Label(),
+		Label: StringPtr(ug.Label()),
 		Attrs: ug.Attrs(),
 	}, nil
 }

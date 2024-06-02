@@ -26,7 +26,7 @@ func run(args []string) error {
 	flags := flag.NewFlagSet(CliName, flag.ExitOnError)
 
 	var (
-		indir    = flags.String("indir", "", "input directory")
+		input    = flags.String("input", "", "input source (default: stdin)")
 		marshal  = flags.Bool("marshal", false, "marshal graph to stdout")
 		format   = flags.String("format", "dot", "encoding format (dot, gexf, cytoscape, sigma, networkx, jsonapi)")
 		builders = flags.Int("builders", BuilderPool, "number of graph builders")
@@ -73,7 +73,7 @@ func run(args []string) error {
 		return err
 	}
 
-	f, err := NewFetcher(*indir)
+	f, err := NewFetcher(*input)
 	if err != nil {
 		return err
 	}

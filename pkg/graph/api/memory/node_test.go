@@ -47,9 +47,9 @@ func TestCreateNode(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -57,9 +57,9 @@ func TestCreateNode(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := ns.CreateNode(context.TODO(), "rangraphuid", n); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -75,9 +75,9 @@ func TestFindNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode"}
+		n := &api.Node{Label: StringPtr("testNode")}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -96,7 +96,7 @@ func TestFindNodeByID(t *testing.T) {
 	t.Run("NotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		if _, err := ns.FindNodeByID(context.TODO(), testGraphUID, -1000); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -104,7 +104,7 @@ func TestFindNodeByID(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if _, err := ns.FindNodeByID(context.TODO(), "randgraphuid", -1000); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -118,10 +118,11 @@ func TestFindNodes(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	// NOTE(milosgajdos): these come from testdata/sample.json
+	// NOTE(milosgajdos): these come from testdata/*.json
 	graphUID := "cc099040-9dab-4f3d-848e-3046912aa281"
 
 	testID := int64(1)
+	testUID := "3ba4972d-c780-4308-9ca8-fe466b60da20"
 	testLabel := "Repo"
 	toTestLabel := "Topic"
 	fromTestLabel := "Owner"
@@ -142,12 +143,12 @@ func TestFindNodes(t *testing.T) {
 		{"IDMatch", graphUID, api.NodeFilter{ID: &testID}, 1, 1, false},
 		{"IDMatch_LabelMatch", graphUID, api.NodeFilter{ID: &testID, Label: &testLabel}, 1, 1, false},
 		{"IDMatch_LabelNoMatch", graphUID, api.NodeFilter{ID: &testID, Label: &randLabel}, 0, 0, false},
-		{"ToIDMatch", graphUID, api.NodeFilter{To: &testID}, 2, 2, false},
-		{"ToIDMatch_LabelMatch", graphUID, api.NodeFilter{To: &testID, Label: &toTestLabel}, 2, 2, false},
-		{"ToIDMatch_LabelNoMatch", graphUID, api.NodeFilter{To: &testID, Label: &randLabel}, 0, 0, false},
-		{"FromIDMatch", graphUID, api.NodeFilter{From: &testID}, 2, 2, false},
-		{"FromIDMatch_LabelMatch", graphUID, api.NodeFilter{From: &testID, Label: &fromTestLabel}, 2, 2, false},
-		{"FromIDMatch_LabelNoMatch", graphUID, api.NodeFilter{From: &testID, Label: &randLabel}, 0, 0, false},
+		{"ToIDMatch", graphUID, api.NodeFilter{Target: &testUID}, 2, 2, false},
+		{"ToIDMatch_LabelMatch", graphUID, api.NodeFilter{Target: &testUID, Label: &toTestLabel}, 2, 2, false},
+		{"ToIDMatch_LabelNoMatch", graphUID, api.NodeFilter{Target: &testUID, Label: &randLabel}, 0, 0, false},
+		{"FromIDMatch", graphUID, api.NodeFilter{Source: &testUID}, 2, 2, false},
+		{"FromIDMatch_LabelMatch", graphUID, api.NodeFilter{Source: &testUID, Label: &fromTestLabel}, 2, 2, false},
+		{"FromIDMatch_LabelNoMatch", graphUID, api.NodeFilter{Source: &testUID, Label: &randLabel}, 0, 0, false},
 		{"LabelOnly", graphUID, api.NodeFilter{Label: &testLabel}, 2, 2, false},
 		{"LabelOnly_WithOffsetLimit", graphUID, api.NodeFilter{Label: &testLabel, Offset: 1, Limit: 1}, 1, 2, false},
 		{"LabelOnly_WithNegOffset", graphUID, api.NodeFilter{Label: &testLabel, Offset: -1, Limit: 10}, 2, 2, false},
@@ -176,7 +177,7 @@ func TestFindNodes(t *testing.T) {
 	}
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if err := ns.DeleteNodeByID(context.TODO(), "randuid", 300); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -192,9 +193,9 @@ func TestUpdateNode(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -218,8 +219,8 @@ func TestUpdateNode(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if node.Label != newLabel {
-			t.Fatalf("expected label: %s, got: %s", newLabel, node.Label)
+		if *node.Label != newLabel {
+			t.Fatalf("expected label: %s, got: %s", newLabel, *node.Label)
 		}
 
 		if val := node.Attrs[fooKey]; val != fooVal {
@@ -230,7 +231,7 @@ func TestUpdateNode(t *testing.T) {
 	t.Run("ErrNodeNotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		newLabel := "NewLabel"
 		update := api.NodeUpdate{
@@ -243,7 +244,7 @@ func TestUpdateNode(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if _, err := ns.UpdateNode(context.TODO(), "randuid", 3000, api.NodeUpdate{}); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatal(err)
@@ -259,9 +260,9 @@ func TestDeleteNodeByID(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
 
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -273,7 +274,7 @@ func TestDeleteNodeByID(t *testing.T) {
 	})
 
 	t.Run("ErrGraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if err := ns.DeleteNodeByID(context.TODO(), "randUID", 300); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -288,9 +289,9 @@ func TestDeleteNodeByUID(t *testing.T) {
 
 	t.Run("OK", func(t *testing.T) {
 		testGraphUID := "testUID"
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
-		n := &api.Node{Label: "testNode", Attrs: map[string]interface{}{"foo": 1}}
+		n := &api.Node{Label: StringPtr("testNode"), Attrs: map[string]interface{}{"foo": 1}}
 
 		if err := ns.CreateNode(context.TODO(), testGraphUID, n); err != nil {
 			t.Fatal(err)
@@ -303,7 +304,7 @@ func TestDeleteNodeByUID(t *testing.T) {
 
 	t.Run("NodeNotFound", func(t *testing.T) {
 		testGraphUID := "testUID"
-		ns := MustNodeServiceWithGraph(t, MemoryDSN, testGraphUID)
+		ns := MustNodeServiceWithGraph(t, DSN, testGraphUID)
 
 		if err := ns.DeleteNodeByUID(context.TODO(), testGraphUID, "doesntMatter"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))
@@ -311,7 +312,7 @@ func TestDeleteNodeByUID(t *testing.T) {
 	})
 
 	t.Run("GraphNotFound", func(t *testing.T) {
-		ns := MustNodeService(t, MemoryDSN)
+		ns := MustNodeService(t, DSN)
 
 		if err := ns.DeleteNodeByUID(context.TODO(), "randUID", "doesntMatter"); api.ErrorCode(err) != api.ENOTFOUND {
 			t.Fatalf("expected error: %s, got: %s", api.ENOTFOUND, api.ErrorCode(err))

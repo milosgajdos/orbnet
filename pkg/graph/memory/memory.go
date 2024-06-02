@@ -19,7 +19,7 @@ const (
 	DefaultWeight = 1.0
 )
 
-// Graph is a graph of starred GitHub repositories.
+// Graph is an in-memory graph.
 type Graph struct {
 	*simple.WeightedDirectedGraph
 	uid   string
@@ -29,7 +29,7 @@ type Graph struct {
 	mu    *sync.RWMutex
 }
 
-// NewGraph creates a new GitHub stars graph and returns it.
+// NewGraph creates a new graph and returns it.
 func NewGraph(opts ...Option) (*Graph, error) {
 	gopts := Options{
 		UID:   uuid.New().String(),
@@ -43,7 +43,7 @@ func NewGraph(opts ...Option) (*Graph, error) {
 	}
 
 	if gopts.Type != DefaultType {
-		return nil, fmt.Errorf("Unsupported graph type: %s", gopts.Type)
+		return nil, fmt.Errorf("unsupported graph type: %s", gopts.Type)
 	}
 
 	return &Graph{

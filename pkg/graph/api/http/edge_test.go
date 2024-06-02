@@ -96,26 +96,6 @@ func TestGetAllEdges(t *testing.T) {
 		}
 	})
 
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		s.EdgeService = MustEdgeService(t, db)
-
-		uid := "dflksdjfdlksf"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges", uid)
-		req := httptest.NewRequest("GET", urlPath, nil)
-
-		resp, err := s.app.Test(req)
-		if err != nil {
-			t.Fatalf("failed to get response: %v", err)
-		}
-		defer resp.Body.Close()
-
-		if code := resp.StatusCode; code != http.StatusBadRequest {
-			t.Fatalf("expected status code: %d, got: %d", http.StatusBadRequest, code)
-		}
-	})
-
 	t.Run("404", func(t *testing.T) {
 		s := MustServer(t)
 		db := MustOpenDB(t, testDir)
@@ -198,37 +178,6 @@ func TestGetEdgeByUID(t *testing.T) {
 		}
 	})
 
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		s.EdgeService = MustEdgeService(t, db)
-
-		testCases := []struct {
-			guid string
-			nuid string
-		}{
-			{"dflksdjfdlksf", "b2f42acb-fea2-4584-902b-0c4a01b51037"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "sdlfksdkfjdf"},
-		}
-
-		for _, tc := range testCases {
-			guid := tc.guid
-			euid := tc.nuid
-			urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges/%s", guid, euid)
-			req := httptest.NewRequest("GET", urlPath, nil)
-
-			resp, err := s.app.Test(req)
-			if err != nil {
-				t.Fatalf("failed to get response: %v", err)
-			}
-			defer resp.Body.Close()
-
-			if code := resp.StatusCode; code != http.StatusBadRequest {
-				t.Fatalf(" expected status code: %d, got: %d, for uid: %q", http.StatusBadRequest, code, tc.nuid)
-			}
-		}
-	})
-
 	t.Run("404", func(t *testing.T) {
 		s := MustServer(t)
 		db := MustOpenDB(t, testDir)
@@ -301,8 +250,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "a877d937-673d-4b43-bb5c-8f9387e43298",
+			Target: "3ba4972d-c780-4308-9ca8-fe466b60da20",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -357,8 +306,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "a877d937-673d-4b43-bb5c-8f9387e43298",
+			Target: "a877d937-673d-4b43-bb5c-8f9387e43298",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -368,8 +317,8 @@ func TestCreateEdge(t *testing.T) {
 			t.Fatalf("failed to serialise req body: %v", err)
 		}
 
-		uid := "dsdsdsffsfs"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges", uid)
+		guid := "sdfdfdfd"
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges", guid)
 		req := httptest.NewRequest("POST", urlPath, bytes.NewReader(testBody))
 		req.Header.Set("Content-Type", "application/json")
 
@@ -395,8 +344,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "foo",
+			Target: "bar",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -438,8 +387,8 @@ func TestCreateEdge(t *testing.T) {
 			"two": "twostring",
 		}
 		apiEdge := &api.Edge{
-			Source: 0,
-			Target: 1,
+			Source: "foo",
+			Target: "bar",
 			Label:  label,
 			Attrs:  attrs,
 		}
@@ -485,37 +434,6 @@ func TestDeleteEdgeByUID(t *testing.T) {
 
 		if code := resp.StatusCode; code != http.StatusNoContent {
 			t.Fatalf("expected status code: %d, got: %d", http.StatusNoContent, code)
-		}
-	})
-
-	t.Run("400", func(t *testing.T) {
-		s := MustServer(t)
-		db := MustOpenDB(t, testDir)
-		s.EdgeService = MustEdgeService(t, db)
-
-		testCases := []struct {
-			guid string
-			nuid string
-		}{
-			{"dflksdjfdlksf", "b2f42acb-fea2-4584-902b-0c4a01b51037"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "sdlfksdkfjdf"},
-		}
-
-		for _, tc := range testCases {
-			guid := tc.guid
-			euid := tc.nuid
-			urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges/%s", guid, euid)
-			req := httptest.NewRequest("DELETE", urlPath, nil)
-
-			resp, err := s.app.Test(req)
-			if err != nil {
-				t.Fatalf("failed to get response: %v", err)
-			}
-			defer resp.Body.Close()
-
-			if code := resp.StatusCode; code != http.StatusBadRequest {
-				t.Fatalf(" expected status code: %d, got: %d, for uid: %q", http.StatusBadRequest, code, tc.nuid)
-			}
 		}
 	})
 
@@ -595,8 +513,9 @@ func TestUpdateEdgeBetween(t *testing.T) {
 			t.Fatalf("failed to serialise req body: %v", err)
 		}
 
-		uid := "cc099040-9dab-4f3d-848e-3046912aa281"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		guid := "cc099040-9dab-4f3d-848e-3046912aa281"
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s",
+			guid, "a877d937-673d-4b43-bb5c-8f9387e43298", "3ba4972d-c780-4308-9ca8-fe466b60da20")
 		req := httptest.NewRequest("PATCH", urlPath, bytes.NewReader(testBody))
 		req.Header.Set("Content-Type", "application/json")
 
@@ -621,9 +540,8 @@ func TestUpdateEdgeBetween(t *testing.T) {
 			source string
 			target string
 		}{
-			{"sdlfkjsdflkdjf", "0", "1"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "1.3", "1"},
-			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "0", "-1"},
+			{"cc099040-9dab-4f3d-848e-3046912aa281", "", "1"},
+			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "0", ""},
 		}
 
 		for _, tc := range testCases {
@@ -717,8 +635,9 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		db := MustOpenDB(t, testDir)
 		s.EdgeService = MustEdgeService(t, db)
 
-		uid := "cc099040-9dab-4f3d-848e-3046912aa281"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		guid := "cc099040-9dab-4f3d-848e-3046912aa281"
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s",
+			guid, "a877d937-673d-4b43-bb5c-8f9387e43298", "3ba4972d-c780-4308-9ca8-fe466b60da20")
 		req := httptest.NewRequest("DELETE", urlPath, nil)
 
 		resp, err := s.app.Test(req)
@@ -742,9 +661,8 @@ func TestDeleteEdgeBetween(t *testing.T) {
 			source string
 			target string
 		}{
-			{"sdlfkjsdflkdjf", "0", "1"},
-			{"cc099040-9dab-4f3d-848e-3046912aa281", "1.3", "1"},
-			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "0", "-1"},
+			{"cc099040-9dab-4f3d-848e-3046912aa281", "", "1"},
+			{"97153afd-c434-4ca0-a35b-7467fcd08df1", "0", ""},
 		}
 
 		for _, tc := range testCases {
@@ -769,7 +687,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		s.EdgeService = MustEdgeService(t, db)
 
 		uid := "97153afd-c434-4ca0-a35b-7467fcd08df1"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s", uid, "foo", "bar")
 		req := httptest.NewRequest("DELETE", urlPath, nil)
 
 		resp, err := s.app.Test(req)
@@ -794,7 +712,7 @@ func TestDeleteEdgeBetween(t *testing.T) {
 		}
 
 		uid := "97153afd-c434-4ca0-a35b-7467fcd08df1"
-		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%d&target=%d", uid, 0, 1)
+		urlPath := fmt.Sprintf("/api/v1/graphs/%s/edges?source=%s&target=%s", uid, "foo", "bar")
 		req := httptest.NewRequest("DELETE", urlPath, nil)
 
 		resp, err := s.app.Test(req)

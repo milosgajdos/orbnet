@@ -30,10 +30,9 @@ func (m *Marshaler) Marshal(g graph.Graph) ([]byte, error) {
 	ag := &marshal.Graph{
 		Graph: api.Graph{
 			UID:   g.UID(),
-			Type:  g.Type(),
 			Nodes: g.Nodes().Len(),
 			Edges: g.Edges().Len(),
-			Label: g.Label(),
+			Label: StringPtr(g.Label()),
 			Attrs: g.Attrs(),
 		},
 		Nodes: make([]api.Node, g.Nodes().Len()),
@@ -58,7 +57,7 @@ func (m *Marshaler) Marshal(g graph.Graph) ([]byte, error) {
 			UID:    n.UID(),
 			DegOut: degOut,
 			DegIn:  degIn,
-			Label:  n.Label(),
+			Label:  StringPtr(n.Label()),
 			Attrs:  n.Attrs(),
 		}
 
@@ -72,8 +71,8 @@ func (m *Marshaler) Marshal(g graph.Graph) ([]byte, error) {
 
 		ag.Edges[i] = api.Edge{
 			UID:    e.UID(),
-			Source: e.From().ID(),
-			Target: e.To().ID(),
+			Source: e.From().(graph.Node).UID(),
+			Target: e.To().(graph.Node).UID(),
 			Weight: e.Weight(),
 			Label:  e.Label(),
 			Attrs:  e.Attrs(),
@@ -83,4 +82,8 @@ func (m *Marshaler) Marshal(g graph.Graph) ([]byte, error) {
 	}
 
 	return json.MarshalIndent(ag, m.prefix, m.indent)
+}
+
+func StringPtr(s string) *string {
+	return &s
 }
