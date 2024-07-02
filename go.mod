@@ -3,7 +3,7 @@ module github.com/milosgajdos/orbnet
 go 1.21
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.1
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/swagger v0.1.14
 	github.com/google/go-github/v61 v61.0.0
 	github.com/google/uuid v1.6.0
