@@ -73,10 +73,16 @@ jobs:
 
     steps:
 
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
     - name: Check out source code
       uses: actions/checkout@v2
 
     - name: Run linter
-      uses: golangci/golangci-lint-action@v2
+      uses: golangci/golangci-lint-action@v6
       with:
-        version: v1.58
+        version: v1.59
+        args: --timeout=5m
