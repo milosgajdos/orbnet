@@ -1,6 +1,7 @@
 module github.com/milosgajdos/orbnet
 
 go 1.21
+toolchain go1.23.7
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.5
@@ -10,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/swaggo/swag v1.16.2
 	golang.org/x/oauth2 v0.19.0
-	golang.org/x/sync v0.10.0
+	golang.org/x/sync v0.11.0
 	gonum.org/v1/gonum v0.12.0
 )
 
@@ -35,9 +36,9 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
