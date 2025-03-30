@@ -11,11 +11,8 @@ linters:
     - errcheck
     - goimports
     - prealloc
-
-run:
-  deadline: 2m
+    - tparallel
 
 issues:
-  skip-dirs:
+  exlude-dirs:
     - vendor
-    - ui
