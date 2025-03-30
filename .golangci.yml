@@ -14,5 +14,5 @@ linters:
     - tparallel
 
 issues:
-  exlude-dirs:
+  exclude-dirs:
     - vendor
