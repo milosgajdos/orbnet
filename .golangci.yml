@@ -3,17 +3,16 @@ linters:
     - staticcheck
     - unconvert
     - gofmt
-    - goimports
     - revive
     - ineffassign
     - unused
     - misspell
     - bodyclose
-    - prealloc
     - errcheck
+    - goimports
+    - prealloc
     - tparallel
 
 issues:
-  deadline: 5m
-  exlude-dirs:
+  exclude-dirs:
     - vendor
