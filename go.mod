@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/gofiber/fiber/v2 v2.52.11
 	github.com/gofiber/swagger v0.1.14
 	github.com/google/go-github/v61 v61.0.0
 	github.com/google/uuid v1.6.0
